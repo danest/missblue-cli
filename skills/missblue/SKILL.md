@@ -63,6 +63,12 @@ you say, ten at most) with an error that says where the message got to. After
 if the recipient has them turned on, so `read` may never come; say so rather than waiting
 again. Their reply is in `mb thread --chat-id <chat_id>`: the send's answer carries the
 chat_id, and `mb threads` lists conversations, newest first.
+
+To give somebody a link to a conversation, use its `url` (`https://missblue.dev/c/...`), which
+`mb send`, `mb threads` and `mb thread` print beside `link_code`. Pass it on as it is; do not
+build one. It opens only for people allowed to read that conversation. A first message to
+somebody new that is still waiting for its number has no link yet; `mb threads` lists it once
+it has gone. Webhooks carry the same link as `data.conversation.url`.
 Webhooks: `mb webhooks`, `mb webhook-add --url https://...`, `mb deliveries --id <id>`.
 Who has been answering: `mb activity --days 7` (needs a signed-in person, not a key).
 
@@ -654,4 +660,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.47 081443dd0c07e408 -->
+<!-- mb skill 0.2.48 cdd22bf040511537 -->
