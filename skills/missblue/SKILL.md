@@ -62,7 +62,15 @@ are created switched off:
     mb automation --id <id>          # the steps, and who switching it on reaches
     mb automation-on --id <id>
 
-The follow-up only goes to people who have not replied. Lists and tags: `mb lists`,
+A list or tag automation sends from Auto unless you pass `--from <number id>`: each person
+gets the best of the project's numbers when their first message goes. A reply ends that
+person's run (`--stop-on-reply false` keeps it going). The follow-up only goes to people who
+have not answered since the message before it; `--follow-up-if` picks another condition
+(`not_replied`, `replied_since_last`, `replied`), and the two that wait for a reply need
+`--stop-on-reply false`. Change one thing at a time with `mb automation-update --id <id>`
+and only that flag, for example `--stop-on-reply false` or `--from auto`.
+
+Lists and tags: `mb lists`,
 `mb list-create --name Spring`, `mb list-add --list Spring --handles +1555...,+1555...`,
 `mb tags`, `mb tag --tag vip --handles +1555...`, `mb untag`, `mb list-remove`. What is
 queued or running: `mb announcements`, `mb scheduled`, `mb automation-runs --id <id>`.
@@ -92,7 +100,10 @@ queued or running: `mb announcements`, `mb scheduled`, `mb automation-runs --id 
   go out at up to 50 a day per number (the preview gives the real figure), spaced a few
   minutes apart, so a large first announcement takes days. That is expected, not a fault.
   A project's first announcement, and its first automation that writes to people first,
-  wait for a person at Miss Blue to read them.
+  wait for a person at Miss Blue to read them. On Auto the pace is per number, so the
+  preview from `mb automation` counts every number Auto can use.
+- If an automation shows a `number_note`, tell the user what it says: its number left the
+  project, and it moved to another of the project's numbers or was switched off.
 - `--allow-duplicate` is only for a deliberate repeat. Do not use it to push a message
   through.
 - Never print, paste or read aloud an API key, a token, or
@@ -328,7 +339,7 @@ One automation, and what switching it on would do: who it reaches now and how lo
 
 ### mb automation-create
 
-Create an automation, switched off. A keyword reply, or a message when somebody joins a list or gets a tag, then a wait, then a follow-up only if they did not reply. Only for people who asked to hear from this business.
+Create an automation, switched off. A keyword reply, or a message when somebody joins a list or gets a tag, then a wait, then a follow-up only if they did not reply. A list or tag automation sends from Auto unless given a number. Only for people who asked to hear from this business.
 
 - `--name <string>` What to call it. Required unless --file has one.
 - `--file <string>` A JSON file with the whole automation, as the API takes it. Other flags are ignored.
@@ -338,17 +349,32 @@ Create an automation, switched off. A keyword reply, or a message when somebody 
 - `--trigger <string>` Or `first_message` (somebody new writes) or `conversation_opened` (any message).
 - `--text <string>` The first message it sends. Required unless --file.
 - `--wait <string>` How long before the follow-up: 30m, 36h, 2d. Up to 31 days.
-- `--follow-up <string>` A second message after --wait, sent only if they have not replied.
-- `--follow-up-anyway` Send the follow-up even to people who replied.
-- `--from <string>` Number id it sends from. For a list or tag, defaults to your only number.
+- `--follow-up <string>` A second message after --wait. By default only if they have not replied since the first.
+- `--follow-up-if <string>` When the follow-up goes: `not_replied_since_last` (the default), `not_replied` (since it started), `replied_since_last` or `replied`.
+- `--follow-up-anyway` Send the follow-up whether or not they replied.
+- `--from <string>` Number id it sends from. A list or tag automation without one sends from Auto: each person gets the best of this project's numbers.
+- `--stop-on-reply` End a person's run as soon as they reply. On unless you pass --stop-on-reply false.
 - `--allow-repeat` Let the same person go through it more than once.
 
 ### mb automation-update
 
-Replace an automation's trigger and steps from a JSON file. People partway through keep their place.
+Change an automation. Pass only what changes: --name, --from, --stop-on-reply or --allow-repeat alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their place.
 
 - `--id <string>` Required. The automation id.
-- `--file <string>` Required. A JSON file with the whole automation, as the API takes it.
+- `--file <string>` A JSON file with the whole automation, as the API takes it.
+- `--name <string>` A new name.
+- `--keyword <string>` Reply when somebody texts one of these words. Separated by commas.
+- `--list <string>` Start when somebody joins this list. Id or name.
+- `--tag <string>` Start when somebody gets this tag.
+- `--trigger <string>` Or `first_message` (somebody new writes) or `conversation_opened` (any message).
+- `--text <string>` A new first message. Replaces the steps, with the follow-up flags.
+- `--wait <string>` How long before the follow-up: 30m, 36h, 2d. Up to 31 days.
+- `--follow-up <string>` A second message after --wait. By default only if they have not replied since the first.
+- `--follow-up-if <string>` When the follow-up goes: `not_replied_since_last` (the default), `not_replied` (since it started), `replied_since_last` or `replied`.
+- `--follow-up-anyway` Send the follow-up whether or not they replied.
+- `--from <string>` Number id it sends from, or `auto` for Auto.
+- `--stop-on-reply` End a person's run as soon as they reply: true or false. Absent keeps what it has.
+- `--allow-repeat` Let the same person go through it more than once.
 
 ### mb automation-on
 
@@ -442,4 +468,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.41 9d7b7a558e84d1e1 -->
+<!-- mb skill 0.2.42 5c9f5c87cf0997ff -->
