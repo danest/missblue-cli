@@ -94,6 +94,23 @@ have not answered since the message before it; `--follow-up-if` picks another co
 `--stop-on-reply false`. Change one thing at a time with `mb automation-update --id <id>`
 and only that flag, for example `--stop-on-reply false` or `--from auto`.
 
+Announcements, scheduled messages and automation steps are Liquid, filled in for each person
+at the moment that message sends. `{{ contact.first_name }}`, `{{ contact.last_name }}` and
+`{{ contact.name }}` come from their contact, and so do the contact's own fields, as
+`{{ contact.custom.product }}` (or `{{ contact.custom["Checkout link"] }}` for a name with a
+space). Always give a variable a `default:` fallback, so somebody with nothing saved reads
+"Hi there" rather than "Hi ,":
+
+    mb automation-create --name "Cart reminder" --tag cart-abandoned --text 'Hi {{ contact.first_name | default: "there" }}, your {{ contact.custom.product }} ({{ contact.custom.amount }}) is still waiting: {{ contact.custom.checkout_link }}' --wait 1d --follow-up 'Still thinking it over, {{ contact.first_name | default: "there" }}? {{ contact.custom.checkout_link }}'
+    mb contact-add --handle +15555550100 --first-name Ada --field product="Blue hoodie" --field amount='$48' --field checkout_link=https://shop.example/c/91
+
+Once it is on, tagging somebody `cart-abandoned` starts it for them. `--field` sets those
+fields and keeps the others; `--field name=` with nothing, or only spaces, after the `=`
+removes one. A field changed before a follow-up sends is what the follow-up says. The
+fields a project's contacts have are listed with the variables at
+`GET /v1/projects/{id}/templates/variables`. `mb send` text goes exactly as typed: it is
+not filled in.
+
 Keep an automation to business hours with `--hours 08:00-18:00 --days mon-fri`: Eastern
 time unless you pass `--time-zone America/Chicago` (or the recipient's zone), every day
 unless you pass `--days`. What starts it still starts it at any time; a message due outside
@@ -286,12 +303,13 @@ Name a handle, or rename one. contact-add does the same and says what it queued 
 
 ### mb contact-add
 
-Add a contact, or rename one, and queue them for Apple Contacts on this project's numbers, so Messages shows their name. Prints what was queued and how to check.
+Add a contact, or rename one, and queue them for Apple Contacts on this project's numbers, so Messages shows their name. Prints what was queued and how to check. --field sets their custom fields for messages to use.
 
 - `--handle <string>` Required. Phone number or Apple ID email.
 - `--name <string>` Their full name. Or give --first-name and --last-name.
 - `--first-name <string>` Their first name.
 - `--last-name <string>` Their last name.
+- `--field <string>` A custom field, as name=value. Repeat it for more: --field product=Hoodie --field amount=$48. Sets those fields and keeps the others; name= with nothing or only spaces after it removes one. Messages read them as {{ contact.custom.product }}.
 - `--no-sync` Save them in Miss Blue only, not in Apple Contacts.
 
 ### mb contact
@@ -535,4 +553,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.44 2df20833242f3cb6 -->
+<!-- mb skill 0.2.45 80b2a2c205879c19 -->

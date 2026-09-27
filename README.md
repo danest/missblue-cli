@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.44**
+Current version: **0.2.45**
 
 ## Install
 
@@ -158,11 +158,12 @@ COMMANDS
   name               Name a handle, or rename one. contact-add does the same and says what it queued for Apple Contacts.
                        --handle          Phone number or Apple ID email. (required)
                        --name            What to call them. (required)
-  contact-add        Add a contact, or rename one, and queue them for Apple Contacts on this project's numbers, so Messages shows their name. Prints what was queued and how to check.
+  contact-add        Add a contact, or rename one, and queue them for Apple Contacts on this project's numbers, so Messages shows their name. Prints what was queued and how to check. --field sets their custom fields for messages to use.
                        --handle          Phone number or Apple ID email. (required)
                        --name            Their full name. Or give --first-name and --last-name.
                        --first-name      Their first name.
                        --last-name       Their last name.
+                       --field           A custom field, as name=value. Repeat it for more: --field product=Hoodie --field amount=$48. Sets those fields and keeps the others; name= with nothing or only spaces after it removes one. Messages read them as {{ contact.custom.product }}.
                        --no-sync         Save them in Miss Blue only, not in Apple Contacts.
   contact            One contact, and whether Apple Contacts on each of this project's numbers has them yet: queued, synced or failed.
                        --handle          Phone number or Apple ID email. (required)
