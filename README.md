@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.49**
+Current version: **0.2.50**
 
 ## Install
 
@@ -183,6 +183,96 @@ COMMANDS
                         --handle          Phone number or Apple ID email of a saved contact. (required)
   unblock             Lift a block, so the organization may message this contact again. Confirm with the person you work for first. Needs a key made by an owner or admin of the organization.
                         --handle          Phone number or Apple ID email of a saved contact. (required)
+  cancel              Cancel a message that has not gone yet: queued, held for review, or waiting for its number to come back.
+                        --id              The message id. (required)
+  resend              Send a held or failed message again, as it was. Confirm with the person you work for first.
+                        --id              The message id. (required)
+  resolve             Mark a conversation done. It opens again by itself when they write back.
+                        --chat-id         The conversation, from `threads`. (required)
+                        --handle          Who the conversation is with. Read from a one-to-one chat_id when left out.
+  reopen              Open a conversation that was marked done.
+                        --chat-id         The conversation, from `threads`. (required)
+                        --handle          Who the conversation is with. Read from a one-to-one chat_id when left out.
+  notes               The team's internal notes on a conversation. The customer never sees them.
+                        --chat-id         The conversation, from `threads`. (required)
+  note                Leave an internal note on a conversation for the team. The customer never sees it.
+                        --chat-id         The conversation, from `threads`. (required)
+                        --text            The note. (required)
+                        --handle          Who the conversation is with. Read from a one-to-one chat_id when left out.
+  note-rm             Remove an internal note. Only one this key, or you, wrote.
+                        --id              The note id, from `notes`. (required)
+  group-create        Start a group iMessage with two or more people and send its first message. Confirm with the person you work for first.
+                        --to              Two or more phone numbers or Apple ID emails, comma separated. (required)
+                        --text            The first message. (required)
+                        --from            Which of this project's numbers. The only one by default.
+  group               One group conversation: its name and who is in it.
+                        --chat-id         The conversation, from `threads`. (required)
+  group-rename        Name a group conversation, as everybody in it sees it. Confirm with the person you work for first.
+                        --chat-id         The conversation, from `threads`. (required)
+                        --name            The new name. (required)
+  group-add           Add somebody to a group conversation; everybody in it sees them join. Confirm with the person you work for first.
+                        --chat-id         The conversation, from `threads`. (required)
+                        --handle          Phone number or Apple ID email. (required)
+  group-remove        Take somebody out of a group conversation; everybody in it sees them leave. Confirm with the person you work for first.
+                        --chat-id         The conversation, from `threads`. (required)
+                        --handle          Phone number or Apple ID email. (required)
+  templates           The project's saved message templates.
+  template-add        Save a message template. It can use {{ variables }}: see `template-variables`.
+                        --name            What to call it. (required)
+                        --text            The message. (required)
+  template-update     Change a saved template's name and text.
+                        --id              The template id, from `templates`. (required)
+                        --name            What to call it. (required)
+                        --text            The message. (required)
+  template-rm         Delete a saved template.
+                        --id              The template id, from `templates`. (required)
+  template-preview    Show how a message with {{ variables }} reads for one contact, or for somebody with no details.
+                        --text            The message. (required)
+                        --handle          A saved contact to fill it in for.
+  template-variables  The {{ variables }} a message can use in this project, custom fields included.
+  project             This project: its numbers, its settings, and your role in it.
+  project-rename      Rename this project. Needs a key made by an owner or admin.
+                        --name            The new name. (required)
+  setting             Change one project setting: opt-out-detection on or off, auto-typing on or off, or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
+                        --name            opt-out-detection, auto-typing or sender-routing. (required)
+                        --value           on or off; single or round-robin for sender-routing. (required)
+  sending-stats       How much each of this project's numbers has sent today, and how much it may still send.
+  traffic             Messages in and out over time, per day.
+                        --days            How far back to count. 1 to 90, 30 by default.
+  report              The project's outreach report: reach, replies and response times.
+                        --days            How far back to count. 1 to 90, 30 by default.
+  webhook-on          Turn a webhook endpoint back on.
+                        --id              The endpoint id, from `webhooks`. (required)
+  webhook-off         Pause a webhook endpoint without deleting it.
+                        --id              The endpoint id, from `webhooks`. (required)
+  list-rename         Rename a list, or change its description.
+                        --list            The list's name or id, from `lists`. (required)
+                        --name            The new name. (required)
+                        --description     What the list is for.
+  list-delete         Delete a list. The contacts on it are kept.
+                        --list            The list's name or id, from `lists`. (required)
+  audience            Which lists and tags one person is on in this project.
+                        --handle          Phone number or Apple ID email. (required)
+  number              One of this project's numbers: its handle, label and whether it is on iMessage now.
+                        --from            Which of this project's numbers. The only one by default.
+  number-profile      Set the name people see for a number in iMessage. Everybody it messages sees the change: confirm with the person you work for first.
+                        --from            Which of this project's numbers. The only one by default.
+                        --first-name      First name. (required)
+                        --last-name       Last name.
+  call-forwarding     Where calls to a number are forwarded, if anywhere.
+                        --from            Which of this project's numbers. The only one by default.
+  call-forward        Ask for calls to a number to be forwarded to another phone. It is a request staff carry out, and a number gets two a month: confirm with the person you work for first.
+                        --from            Which of this project's numbers. The only one by default.
+                        --to              The phone number to forward to. (required)
+  unread              How many conversations have messages you have not read. Needs a signed-in person (mb login): a key reads nothing, so it always sees 0.
+  location-request    Ask somebody to share their location in Find My. Confirm with the person you work for first.
+                        --chat-id         The conversation, from `threads`. (required)
+                        --to              Their phone number or Apple ID email. (required)
+  location            Somebody's shared location, when they have shared it.
+                        --chat-id         The conversation, from `threads`. (required)
+                        --to              Their phone number or Apple ID email. (required)
+  sync                Read a number's conversations from its Mac again, to fill in anything missed.
+                        --from            Which of this project's numbers. The only one by default.
   webhooks            The endpoints this project sends events to.
   webhook-add         Register where events should go.
                         --url             https, and not a private address. (required)

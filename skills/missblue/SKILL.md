@@ -184,7 +184,9 @@ version's results stay. `automation-update --text` replaces the steps and ends a
   day, 50 by default, and spaced out. A send may be accepted and held; that is expected.
   Do not try to get around the limit.
 - The server honours STOP and other opt-outs. A refused send to somebody who opted out
-  is final: do not retry it from another number.
+  is final: do not retry it from another number. If they write back afterwards, you may
+  answer them one to one with `mb send`; campaigns and automations still skip
+  them until they text START.
 - When somebody asks you to stop, in any words ("stop texting me", "not interested, take
   me off", "wrong person, leave me alone"), run `mb opt-out --handle <them> --note "<what
   they said>"` straight away, before anything else, and do not message them again. It is
@@ -419,6 +421,239 @@ Block a saved contact across the whole organization: nothing is sent to them fro
 Lift a block, so the organization may message this contact again. Confirm with the person you work for first. Needs a key made by an owner or admin of the organization.
 
 - `--handle <string>` Required. Phone number or Apple ID email of a saved contact.
+
+### mb cancel
+
+Cancel a message that has not gone yet: queued, held for review, or waiting for its number to come back.
+
+- `--id <string>` Required. The message id.
+
+### mb resend
+
+Send a held or failed message again, as it was. Confirm with the person you work for first.
+
+- `--id <string>` Required. The message id.
+
+### mb resolve
+
+Mark a conversation done. It opens again by itself when they write back.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+- `--handle <string>` Who the conversation is with. Read from a one-to-one chat_id when left out.
+
+### mb reopen
+
+Open a conversation that was marked done.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+- `--handle <string>` Who the conversation is with. Read from a one-to-one chat_id when left out.
+
+### mb notes
+
+The team's internal notes on a conversation. The customer never sees them.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+
+### mb note
+
+Leave an internal note on a conversation for the team. The customer never sees it.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+- `--text <string>` Required. The note.
+- `--handle <string>` Who the conversation is with. Read from a one-to-one chat_id when left out.
+
+### mb note-rm
+
+Remove an internal note. Only one this key, or you, wrote.
+
+- `--id <string>` Required. The note id, from `notes`.
+
+### mb group-create
+
+Start a group iMessage with two or more people and send its first message. Confirm with the person you work for first.
+
+- `--to <string>` Required. Two or more phone numbers or Apple ID emails, comma separated.
+- `--text <string>` Required. The first message.
+- `--from <string>` Which of this project's numbers. The only one by default.
+
+### mb group
+
+One group conversation: its name and who is in it.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+
+### mb group-rename
+
+Name a group conversation, as everybody in it sees it. Confirm with the person you work for first.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+- `--name <string>` Required. The new name.
+
+### mb group-add
+
+Add somebody to a group conversation; everybody in it sees them join. Confirm with the person you work for first.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+- `--handle <string>` Required. Phone number or Apple ID email.
+
+### mb group-remove
+
+Take somebody out of a group conversation; everybody in it sees them leave. Confirm with the person you work for first.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+- `--handle <string>` Required. Phone number or Apple ID email.
+
+### mb templates
+
+The project's saved message templates.
+
+### mb template-add
+
+Save a message template. It can use {{ variables }}: see `template-variables`.
+
+- `--name <string>` Required. What to call it.
+- `--text <string>` Required. The message.
+
+### mb template-update
+
+Change a saved template's name and text.
+
+- `--id <string>` Required. The template id, from `templates`.
+- `--name <string>` Required. What to call it.
+- `--text <string>` Required. The message.
+
+### mb template-rm
+
+Delete a saved template.
+
+- `--id <string>` Required. The template id, from `templates`.
+
+### mb template-preview
+
+Show how a message with {{ variables }} reads for one contact, or for somebody with no details.
+
+- `--text <string>` Required. The message.
+- `--handle <string>` A saved contact to fill it in for.
+
+### mb template-variables
+
+The {{ variables }} a message can use in this project, custom fields included.
+
+### mb project
+
+This project: its numbers, its settings, and your role in it.
+
+### mb project-rename
+
+Rename this project. Needs a key made by an owner or admin.
+
+- `--name <string>` Required. The new name.
+
+### mb setting
+
+Change one project setting: opt-out-detection on or off, auto-typing on or off, or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
+
+- `--name <string>` Required. opt-out-detection, auto-typing or sender-routing.
+- `--value <string>` Required. on or off; single or round-robin for sender-routing.
+
+### mb sending-stats
+
+How much each of this project's numbers has sent today, and how much it may still send.
+
+### mb traffic
+
+Messages in and out over time, per day.
+
+- `--days <number>` How far back to count. 1 to 90, 30 by default.
+
+### mb report
+
+The project's outreach report: reach, replies and response times.
+
+- `--days <number>` How far back to count. 1 to 90, 30 by default.
+
+### mb webhook-on
+
+Turn a webhook endpoint back on.
+
+- `--id <string>` Required. The endpoint id, from `webhooks`.
+
+### mb webhook-off
+
+Pause a webhook endpoint without deleting it.
+
+- `--id <string>` Required. The endpoint id, from `webhooks`.
+
+### mb list-rename
+
+Rename a list, or change its description.
+
+- `--list <string>` Required. The list's name or id, from `lists`.
+- `--name <string>` Required. The new name.
+- `--description <string>` What the list is for.
+
+### mb list-delete
+
+Delete a list. The contacts on it are kept.
+
+- `--list <string>` Required. The list's name or id, from `lists`.
+
+### mb audience
+
+Which lists and tags one person is on in this project.
+
+- `--handle <string>` Required. Phone number or Apple ID email.
+
+### mb number
+
+One of this project's numbers: its handle, label and whether it is on iMessage now.
+
+- `--from <string>` Which of this project's numbers. The only one by default.
+
+### mb number-profile
+
+Set the name people see for a number in iMessage. Everybody it messages sees the change: confirm with the person you work for first.
+
+- `--from <string>` Which of this project's numbers. The only one by default.
+- `--first-name <string>` Required. First name.
+- `--last-name <string>` Last name.
+
+### mb call-forwarding
+
+Where calls to a number are forwarded, if anywhere.
+
+- `--from <string>` Which of this project's numbers. The only one by default.
+
+### mb call-forward
+
+Ask for calls to a number to be forwarded to another phone. It is a request staff carry out, and a number gets two a month: confirm with the person you work for first.
+
+- `--from <string>` Which of this project's numbers. The only one by default.
+- `--to <string>` Required. The phone number to forward to.
+
+### mb unread
+
+How many conversations have messages you have not read. Needs a signed-in person (mb login): a key reads nothing, so it always sees 0.
+
+### mb location-request
+
+Ask somebody to share their location in Find My. Confirm with the person you work for first.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+- `--to <string>` Required. Their phone number or Apple ID email.
+
+### mb location
+
+Somebody's shared location, when they have shared it.
+
+- `--chat-id <string>` Required. The conversation, from `threads`.
+- `--to <string>` Required. Their phone number or Apple ID email.
+
+### mb sync
+
+Read a number's conversations from its Mac again, to fill in anything missed.
+
+- `--from <string>` Which of this project's numbers. The only one by default.
 
 ### mb webhooks
 
@@ -694,4 +929,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.49 096c787dde963936 -->
+<!-- mb skill 0.2.50 2916b4180d00d4fc -->
