@@ -1,6 +1,6 @@
 ---
 name: missblue
-description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered or read, look up whether a number has iMessage, add contacts to Apple Contacts and tag them, manage webhooks, and run campaigns (announcements to a list, scheduled messages, automations, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
+description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered or read, look up whether a number has iMessage, add contacts to Apple Contacts and tag them, manage webhooks, and run campaigns (announcements to a list, scheduled messages, automations and how they are doing, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
 ---
 
 # Miss Blue
@@ -121,6 +121,22 @@ Lists and tags: `mb lists`,
 `mb list-create --name Spring`, `mb list-add --list Spring --handles +1555...,+1555...`,
 `mb tags`, `mb tag --tag vip --handles +1555...`, `mb untag`, `mb list-remove`. What is
 queued or running: `mb announcements`, `mb scheduled`, `mb automation-runs --id <id>`.
+
+How an automation is doing, and which of its texts got the replies:
+
+    mb automation-stats --id <id>              # the last 30 days; --days 90, or --all
+    mb automation-replies --id <id> --step 4   # who answered step 4, what they said, and a link
+
+`automation-stats` gives each send step's sent, delivered, read (opened), replied and opted
+out, with a reply rate and an opt-out rate, and how people's runs ended. Read receipts only
+come from people who have them turned on, so read is at least that many, never a rate.
+A reply counts for a step when that step's message was the last thing sent to that person
+before they wrote, within a week (not after a message from the team or an announcement),
+and each person counts once however many texts they send. Opted out counts only replies
+that opted them out; a STOP to a project that handles opt-outs itself shows as `said_stop`.
+An automation older than the record of which step sent each message is counted from then
+(`from_recorded_since`).
+`automation-replies` lists every text, newest first; for more, run the `next` it prints.
 
 ## Rules
 
@@ -491,6 +507,26 @@ Who is in an automation and how far they got, or which automations are messaging
 - `--limit <number>` How many to show. 1 to 500, 100 by default.
 - `--offset <number>` How many to skip, for the next page.
 
+### mb automation-stats
+
+How an automation is doing, step by step: sent, delivered, read (opened), replied and opted out, with reply and opt-out rates, and how people's runs ended. Read only counts people with read receipts on, so it is at least that many.
+
+- `--id <string>` Required. The automation id, from `automations`.
+- `--days <number>` Count messages sent in the last this many days. 1 to 365, 30 by default.
+- `--all` Count everything since the automation began, instead of --days.
+- `--variant <string>` Only this version of each step's text, for A/B/C tests.
+
+### mb automation-replies
+
+Which texts got the replies: who answered an automation, what they said and when, the message they answered, and a link to the conversation. Newest first.
+
+- `--id <string>` Required. The automation id, from `automations`.
+- `--step <number>` Only replies to this step's messages: its number, from 1, as `automation-stats` numbers it.
+- `--days <number>` Only replies to messages sent in the last this many days. All of them by default.
+- `--variant <string>` Only replies to this version of the text, for A/B/C tests.
+- `--limit <number>` How many to show. 1 to 100, 25 by default.
+- `--cursor <string>` `next_cursor` from the page before, for the next page.
+
 ### mb automation-stop
 
 Take one person out of one automation. Everybody else carries on.
@@ -553,4 +589,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.45 80b2a2c205879c19 -->
+<!-- mb skill 0.2.46 6256074017b31590 -->
