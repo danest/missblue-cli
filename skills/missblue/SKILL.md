@@ -70,6 +70,12 @@ have not answered since the message before it; `--follow-up-if` picks another co
 `--stop-on-reply false`. Change one thing at a time with `mb automation-update --id <id>`
 and only that flag, for example `--stop-on-reply false` or `--from auto`.
 
+Keep an automation to business hours with `--hours 08:00-18:00 --days mon-fri`: Eastern
+time unless you pass `--time-zone America/Chicago` (or the recipient's zone), every day
+unless you pass `--days`. What starts it still starts it at any time; a message due outside
+the hours waits until they next open, and first contacts are still paced inside them.
+`mb automation-update --id <id> --any-time` clears the hours.
+
 Lists and tags: `mb lists`,
 `mb list-create --name Spring`, `mb list-add --list Spring --handles +1555...,+1555...`,
 `mb tags`, `mb tag --tag vip --handles +1555...`, `mb untag`, `mb list-remove`. What is
@@ -339,7 +345,7 @@ One automation, and what switching it on would do: who it reaches now and how lo
 
 ### mb automation-create
 
-Create an automation, switched off. A keyword reply, or a message when somebody joins a list or gets a tag, then a wait, then a follow-up only if they did not reply. A list or tag automation sends from Auto unless given a number. Only for people who asked to hear from this business.
+Create an automation, switched off. A keyword reply, or a message when somebody joins a list or gets a tag, then a wait, then a follow-up only if they did not reply. A list or tag automation sends from Auto unless given a number. --hours keeps it to business hours. Only for people who asked to hear from this business.
 
 - `--name <string>` What to call it. Required unless --file has one.
 - `--file <string>` A JSON file with the whole automation, as the API takes it. Other flags are ignored.
@@ -355,10 +361,14 @@ Create an automation, switched off. A keyword reply, or a message when somebody 
 - `--from <string>` Number id it sends from. A list or tag automation without one sends from Auto: each person gets the best of this project's numbers.
 - `--stop-on-reply` End a person's run as soon as they reply. On unless you pass --stop-on-reply false.
 - `--allow-repeat` Let the same person go through it more than once.
+- `--hours <string>` Only send between these times, like 08:00-18:00 or 9am-5pm. A message due outside them waits until they open; what starts it still starts it at any time.
+- `--time-zone <string>` The zone --hours are in, like America/Chicago. Eastern (America/New_York) unless given.
+- `--days <string>` The days it sends on, with --hours: mon-fri, mon,wed,fri or weekends. Every day unless given.
+- `--any-time` Send at any hour, with no --hours. The default.
 
 ### mb automation-update
 
-Change an automation. Pass only what changes: --name, --from, --stop-on-reply or --allow-repeat alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their place.
+Change an automation. Pass only what changes: --name, --from, --stop-on-reply, --allow-repeat or the hours flags alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their step number.
 
 - `--id <string>` Required. The automation id.
 - `--file <string>` A JSON file with the whole automation, as the API takes it.
@@ -375,6 +385,10 @@ Change an automation. Pass only what changes: --name, --from, --stop-on-reply or
 - `--from <string>` Number id it sends from, or `auto` for Auto.
 - `--stop-on-reply` End a person's run as soon as they reply: true or false. Absent keeps what it has.
 - `--allow-repeat` Let the same person go through it more than once.
+- `--hours <string>` Only send between these times, like 08:00-18:00 or 9am-5pm. Keeps its zone and days unless you change them.
+- `--time-zone <string>` The zone its hours are in, like America/Chicago. Eastern (America/New_York) for new hours unless given.
+- `--days <string>` The days it sends on: mon-fri, mon,wed,fri or weekends. Needs hours, given now or already set.
+- `--any-time` Clear its hours: send at any time again.
 
 ### mb automation-on
 
@@ -468,4 +482,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.42 5c9f5c87cf0997ff -->
+<!-- mb skill 0.2.43 17ff1cce0dfe8ee0 -->

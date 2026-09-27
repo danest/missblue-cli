@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.42**
+Current version: **0.2.43**
 
 ## Install
 
@@ -191,7 +191,7 @@ COMMANDS
   automations        Automations in this project: what starts each, its steps, and whether it is on.
   automation         One automation, and what switching it on would do: who it reaches now and how long first contacts take.
                        --id              The automation id, from `automations`. (required)
-  automation-create  Create an automation, switched off. A keyword reply, or a message when somebody joins a list or gets a tag, then a wait, then a follow-up only if they did not reply. A list or tag automation sends from Auto unless given a number. Only for people who asked to hear from this business.
+  automation-create  Create an automation, switched off. A keyword reply, or a message when somebody joins a list or gets a tag, then a wait, then a follow-up only if they did not reply. A list or tag automation sends from Auto unless given a number. --hours keeps it to business hours. Only for people who asked to hear from this business.
                        --name            What to call it. Required unless --file has one.
                        --file            A JSON file with the whole automation, as the API takes it. Other flags are ignored.
                        --keyword         Reply when somebody texts one of these words. Separated by commas.
@@ -206,7 +206,11 @@ COMMANDS
                        --from            Number id it sends from. A list or tag automation without one sends from Auto: each person gets the best of this project's numbers.
                        --stop-on-reply   End a person's run as soon as they reply. On unless you pass --stop-on-reply false.
                        --allow-repeat    Let the same person go through it more than once.
-  automation-update  Change an automation. Pass only what changes: --name, --from, --stop-on-reply or --allow-repeat alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their place.
+                       --hours           Only send between these times, like 08:00-18:00 or 9am-5pm. A message due outside them waits until they open; what starts it still starts it at any time.
+                       --time-zone       The zone --hours are in, like America/Chicago. Eastern (America/New_York) unless given.
+                       --days            The days it sends on, with --hours: mon-fri, mon,wed,fri or weekends. Every day unless given.
+                       --any-time        Send at any hour, with no --hours. The default.
+  automation-update  Change an automation. Pass only what changes: --name, --from, --stop-on-reply, --allow-repeat or the hours flags alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their step number.
                        --id              The automation id. (required)
                        --file            A JSON file with the whole automation, as the API takes it.
                        --name            A new name.
@@ -222,6 +226,10 @@ COMMANDS
                        --from            Number id it sends from, or `auto` for Auto.
                        --stop-on-reply   End a person's run as soon as they reply: true or false. Absent keeps what it has.
                        --allow-repeat    Let the same person go through it more than once.
+                       --hours           Only send between these times, like 08:00-18:00 or 9am-5pm. Keeps its zone and days unless you change them.
+                       --time-zone       The zone its hours are in, like America/Chicago. Eastern (America/New_York) for new hours unless given.
+                       --days            The days it sends on: mon-fri, mon,wed,fri or weekends. Needs hours, given now or already set.
+                       --any-time        Clear its hours: send at any time again.
   automation-on      Switch an automation on. Show the user what it will send and who it reaches first. With include_existing it also messages everybody already on the list or tag, which needs confirm after the user says yes.
                        --id              The automation id. (required)
                        --include-existingAlso start it for everybody already on the list or carrying the tag.
