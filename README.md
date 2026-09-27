@@ -1,4 +1,4 @@
-# mb — the Miss Blue command line
+# mb, the Miss Blue command line
 
 `mb` is the [Miss Blue](https://missblue.dev) API from a terminal: send and
 read iMessages from your numbers, look people up, manage contacts and webhooks.
@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.39**
+Current version: **0.2.40**
 
 ## Install
 
@@ -53,6 +53,18 @@ from the console's Developers page instead of signing in.
 
 ## Use with AI agents
 
+Install the Miss Blue skill so your agent knows how to use `mb` and what it
+must never do:
+
+```sh
+mb skill install            # Claude Code, Cursor and OpenCode (~/.claude/skills)
+mb skill install --codex    # Codex, Cursor and OpenCode (~/.agents/skills)
+```
+
+The same file is published with every release as
+[SKILL.md](https://github.com/danest/missblue-cli/releases/latest/download/SKILL.md)
+and kept in this repository at `skills/missblue/SKILL.md`.
+
 `mb mcp` serves every command below as an MCP tool over stdio. For example,
 Claude Code:
 
@@ -66,7 +78,7 @@ Gemini CLI: https://missblue.dev/docs/cli
 ## Commands
 
 ```
-mb — the Miss Blue API from a terminal
+mb: the Miss Blue API from a terminal
 
 USAGE
   mb <command> [--flag value]
@@ -77,6 +89,13 @@ SIGNING IN
                        --no-browser   print the URL instead of opening one
   use [project]      Choose the project again, from a list or by id or name.
   logout             Forget the saved token on this machine.
+
+AI AGENTS
+  skill              Print the Miss Blue skill: how an agent should use mb.
+  skill install      Install it for Claude Code (also read by Cursor and OpenCode).
+                       --codex   for Codex instead (~/.agents/skills)
+                       --repo    into this directory, to commit for a team
+                       --force   replace a copy that was edited by hand
 
   --project <id>     On any command: act on this project instead, once.
   MISS_BLUE_PROJECT  The same, for a whole shell or script.
