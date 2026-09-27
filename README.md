@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.46**
+Current version: **0.2.47**
 
 ## Install
 
@@ -190,6 +190,11 @@ COMMANDS
                         --at              When to start, with a UTC offset: 2026-10-02T09:00:00-05:00. Otherwise when sent.
                         --time-zone       The zone --at was chosen in, like America/Chicago. Shown in the console.
                         --reply-window-hoursHow long a reply still counts as a reply to it. 1 to 720, 72 by default.
+                        --text-b          An A/B test: version B of the message. --text is version A. Each person gets one.
+                        --text-c          Version C, with --text-b, for an A/B/C test.
+                        --weights         Each version's share of the list, in percent, A first: 50,30,20. An even split unless given.
+                        --test-first      Send the versions to this share of the list first, like 20%, then the rest the one with the best reply rate. 5% to 50%.
+                        --pick-after      With --test-first: how long after the test has gone out to pick, like 4h. 1h to 72h, 4h by default.
   announce-send       Send a drafted announcement. Prints the preview again. Only after the user has seen the preview and the text and explicitly said yes: pass confirm. Without it nothing is sent.
                         --id              The announcement id, from `announce` or `announcements`. (required)
                         --confirm         The user said yes to this preview. Without it, nothing is sent.
@@ -219,6 +224,11 @@ COMMANDS
                         --follow-up       A second message after --wait. By default only if they have not replied since the first.
                         --follow-up-if    When the follow-up goes: `not_replied_since_last` (the default), `not_replied` (since it started), `replied_since_last` or `replied`.
                         --follow-up-anywaySend the follow-up whether or not they replied.
+                        --text-b          An A/B test: version B of the first message. --text is version A. Each person gets one version, and keeps it for the follow-up.
+                        --text-c          Version C of the first message, with --text-b.
+                        --weights         Each version's share of new people, in percent, A first: 50,30,20. Also the follow-up's when it has as many versions. An even split unless given.
+                        --follow-up-b     Version B of the follow-up. People on B hear it; anybody on C hears A where there is no C.
+                        --follow-up-c     Version C of the follow-up, with --follow-up-b.
                         --from            Number id it sends from. A list or tag automation without one sends from Auto: each person gets the best of this project's numbers.
                         --stop-on-reply   End a person's run as soon as they reply. On unless you pass --stop-on-reply false.
                         --allow-repeat    Let the same person go through it more than once.
@@ -239,6 +249,11 @@ COMMANDS
                         --follow-up       A second message after --wait. By default only if they have not replied since the first.
                         --follow-up-if    When the follow-up goes: `not_replied_since_last` (the default), `not_replied` (since it started), `replied_since_last` or `replied`.
                         --follow-up-anywaySend the follow-up whether or not they replied.
+                        --text-b          An A/B test: version B of the first message, with --text as A. Replaces the steps.
+                        --text-c          Version C of the first message, with --text-b.
+                        --weights         Each version's share of new people, A first: 50,30,20. To change only the weights, use `variant-weights`.
+                        --follow-up-b     Version B of the follow-up.
+                        --follow-up-c     Version C of the follow-up, with --follow-up-b.
                         --from            Number id it sends from, or `auto` for Auto.
                         --stop-on-reply   End a person's run as soon as they reply: true or false. Absent keeps what it has.
                         --allow-repeat    Let the same person go through it more than once.
@@ -265,6 +280,15 @@ COMMANDS
                         --days            Count messages sent in the last this many days. 1 to 365, 30 by default.
                         --all             Count everything since the automation began, instead of --days.
                         --variant         Only this version of each step's text, for A/B/C tests.
+  variant-use         "Use this one" in an A/B/C test. For an automation, one step's version for everybody who reaches that step from now on (weights 100/0/0), including people given another version earlier; the others' results stay. For an announcement, everybody not yet sent gets it, which ends a test first's wait. Ask the user first.
+                        --automation      The automation id. Or --announcement.
+                        --step            With --automation: the step's number, from 1, as `automation-stats` numbers it.
+                        --announcement    The announcement id, instead of --automation.
+                        --letter          The version: A, B or C. (required)
+  variant-weights     Change the weights of an automation's A/B/C test, on the first step with versions (later steps follow its split). They decide the version of people who reach it from now on; anybody already given a version keeps it.
+                        --automation      The automation id. (required)
+                        --step            The step's number, from 1, as `automation-stats` numbers it. (required)
+                        --weights         Each version's share in percent, A first, adding up to 100: 70,30 or 50,30,20. (required)
   automation-replies  Which texts got the replies: who answered an automation, what they said and when, the message they answered, and a link to the conversation. Newest first.
                         --id              The automation id, from `automations`. (required)
                         --step            Only replies to this step's messages: its number, from 1, as `automation-stats` numbers it.

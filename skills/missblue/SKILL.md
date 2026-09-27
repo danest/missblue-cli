@@ -1,6 +1,6 @@
 ---
 name: missblue
-description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered or read, look up whether a number has iMessage, add contacts to Apple Contacts and tag them, manage webhooks, and run campaigns (announcements to a list, scheduled messages, automations and how they are doing, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
+description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered or read, look up whether a number has iMessage, add contacts to Apple Contacts and tag them, manage webhooks, and run campaigns (announcements to a list, scheduled messages, automations and how they are doing, A/B/C tests of their texts, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, A/B test messages to, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
 ---
 
 # Miss Blue
@@ -138,6 +138,36 @@ An automation older than the record of which step sent each message is counted f
 (`from_recorded_since`).
 `automation-replies` lists every text, newest first; for more, run the `next` it prints.
 
+### A/B/C tests
+
+A message can have two or three versions, to learn which one gets replies (and which one
+makes people opt out). `--text` is version A; add `--text-b`, `--text-c` and `--weights`
+(each version's share, A first, adding up to 100; an even split unless given):
+
+    mb automation-create --name Tour --tag toured --text "Thanks for coming by!" --text-b "Want a second look?" --weights 50,50 --wait 1d --follow-up "Still thinking it over?" --follow-up-b "Happy to set up another visit."
+    mb announce --text "Open house Saturday." --text-b "Come see it Saturday?" --list Leads --test-first 20% --pick-after 4h
+
+In an automation each person is given a version the first time they reach a message with
+versions, and keeps it: somebody on B hears B's follow-up too (A where a message has no B).
+An announcement divides its list by the weights when it is drafted; with `--test-first` it
+sends the versions to that share of the list, waits `--pick-after` from when the last of
+them went, then sends everybody else the version with the best reply rate, leaving out one
+with clearly more opt-outs.
+
+`mb automation-stats` puts each tested step's versions side by side and says whether one is
+ahead: "B gets more replies (18% vs 11%), and opt-outs are about the same." Under 30 people
+reached per version it says "Not enough yet", and a gap too small to be sure is "about the
+same". Say that plainly; never call a winner the stats do not call. Then, if the user wants:
+
+    mb variant-use --automation <id> --step 1 --letter B       # everybody reaching step 1 gets B
+    mb variant-weights --automation <id> --step 1 --weights 70,30
+    mb variant-use --announcement <id> --letter B               # the rest of an announcement
+
+`variant-use` sends that version to everybody who reaches the step from now on, including
+people given another version earlier. `variant-weights` works on the first step with
+versions only (later steps follow its split): people already given one keep it. Every
+version's results stay. `automation-update --text` replaces the steps and ends a test.
+
 ## Rules
 
 - Only message people who expect to hear from this business: its customers, and people
@@ -167,6 +197,9 @@ An automation older than the record of which step sent each message is counted f
   preview from `mb automation` counts every number Auto can use.
 - If an automation shows a `number_note`, tell the user what it says: its number left the
   project, and it moved to another of the project's numbers or was switched off.
+- In an A/B/C test, show the user every version before sending: each is a message people
+  get. Run `mb variant-use` or `mb variant-weights` only after the user asks, and report the
+  verdict as the stats say it, including "Not enough yet".
 - `--allow-duplicate` is only for a deliberate repeat. Do not use it to push a message
   through.
 - Never send a message again because `--wait` ran out or it is still pending: it was sent,
@@ -386,6 +419,11 @@ Draft an announcement (one message to many people) and preview it. Sends nothing
 - `--at <string>` When to start, with a UTC offset: 2026-10-02T09:00:00-05:00. Otherwise when sent.
 - `--time-zone <string>` The zone --at was chosen in, like America/Chicago. Shown in the console.
 - `--reply-window-hours <number>` How long a reply still counts as a reply to it. 1 to 720, 72 by default.
+- `--text-b <string>` An A/B test: version B of the message. --text is version A. Each person gets one.
+- `--text-c <string>` Version C, with --text-b, for an A/B/C test.
+- `--weights <string>` Each version's share of the list, in percent, A first: 50,30,20. An even split unless given.
+- `--test-first <string>` Send the versions to this share of the list first, like 20%, then the rest the one with the best reply rate. 5% to 50%.
+- `--pick-after <string>` With --test-first: how long after the test has gone out to pick, like 4h. 1h to 72h, 4h by default.
 
 ### mb announce-send
 
@@ -445,6 +483,11 @@ Create an automation, switched off. A keyword reply, or a message when somebody 
 - `--follow-up <string>` A second message after --wait. By default only if they have not replied since the first.
 - `--follow-up-if <string>` When the follow-up goes: `not_replied_since_last` (the default), `not_replied` (since it started), `replied_since_last` or `replied`.
 - `--follow-up-anyway` Send the follow-up whether or not they replied.
+- `--text-b <string>` An A/B test: version B of the first message. --text is version A. Each person gets one version, and keeps it for the follow-up.
+- `--text-c <string>` Version C of the first message, with --text-b.
+- `--weights <string>` Each version's share of new people, in percent, A first: 50,30,20. Also the follow-up's when it has as many versions. An even split unless given.
+- `--follow-up-b <string>` Version B of the follow-up. People on B hear it; anybody on C hears A where there is no C.
+- `--follow-up-c <string>` Version C of the follow-up, with --follow-up-b.
 - `--from <string>` Number id it sends from. A list or tag automation without one sends from Auto: each person gets the best of this project's numbers.
 - `--stop-on-reply` End a person's run as soon as they reply. On unless you pass --stop-on-reply false.
 - `--allow-repeat` Let the same person go through it more than once.
@@ -469,6 +512,11 @@ Change an automation. Pass only what changes: --name, --from, --stop-on-reply, -
 - `--follow-up <string>` A second message after --wait. By default only if they have not replied since the first.
 - `--follow-up-if <string>` When the follow-up goes: `not_replied_since_last` (the default), `not_replied` (since it started), `replied_since_last` or `replied`.
 - `--follow-up-anyway` Send the follow-up whether or not they replied.
+- `--text-b <string>` An A/B test: version B of the first message, with --text as A. Replaces the steps.
+- `--text-c <string>` Version C of the first message, with --text-b.
+- `--weights <string>` Each version's share of new people, A first: 50,30,20. To change only the weights, use `variant-weights`.
+- `--follow-up-b <string>` Version B of the follow-up.
+- `--follow-up-c <string>` Version C of the follow-up, with --follow-up-b.
 - `--from <string>` Number id it sends from, or `auto` for Auto.
 - `--stop-on-reply` End a person's run as soon as they reply: true or false. Absent keeps what it has.
 - `--allow-repeat` Let the same person go through it more than once.
@@ -515,6 +563,23 @@ How an automation is doing, step by step: sent, delivered, read (opened), replie
 - `--days <number>` Count messages sent in the last this many days. 1 to 365, 30 by default.
 - `--all` Count everything since the automation began, instead of --days.
 - `--variant <string>` Only this version of each step's text, for A/B/C tests.
+
+### mb variant-use
+
+"Use this one" in an A/B/C test. For an automation, one step's version for everybody who reaches that step from now on (weights 100/0/0), including people given another version earlier; the others' results stay. For an announcement, everybody not yet sent gets it, which ends a test first's wait. Ask the user first.
+
+- `--automation <string>` The automation id. Or --announcement.
+- `--step <number>` With --automation: the step's number, from 1, as `automation-stats` numbers it.
+- `--announcement <string>` The announcement id, instead of --automation.
+- `--letter <string>` Required. The version: A, B or C.
+
+### mb variant-weights
+
+Change the weights of an automation's A/B/C test, on the first step with versions (later steps follow its split). They decide the version of people who reach it from now on; anybody already given a version keeps it.
+
+- `--automation <string>` Required. The automation id.
+- `--step <number>` Required. The step's number, from 1, as `automation-stats` numbers it.
+- `--weights <string>` Required. Each version's share in percent, A first, adding up to 100: 70,30 or 50,30,20.
 
 ### mb automation-replies
 
@@ -589,4 +654,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.46 6256074017b31590 -->
+<!-- mb skill 0.2.47 081443dd0c07e408 -->
