@@ -1,6 +1,6 @@
 ---
 name: missblue
-description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered, look up whether a number has iMessage, and manage contacts and webhooks. Use when the user asks to text, message, iMessage, follow up with, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
+description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered, look up whether a number has iMessage, manage contacts and webhooks, and run campaigns (announcements to a list, scheduled messages, automations, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
 ---
 
 # Miss Blue
@@ -42,6 +42,31 @@ Contacts: `mb contacts`, `mb name --handle +1555... --name "Dana"`, `mb forget -
 Webhooks: `mb webhooks`, `mb webhook-add --url https://...`, `mb deliveries --id <id>`.
 Who has been answering: `mb activity --days 7` (needs a signed-in person, not a key).
 
+## Campaigns
+
+An announcement is one message to many people. Draft it, which sends nothing and prints a
+preview, then send it only after the user says yes to that preview:
+
+    mb announce --text "We open at nine from Monday" --list "Spring customers" --tag vip
+    mb announce-send --id <announcement id> --confirm
+
+Schedule one message for later, at the recipient's local time with their UTC offset:
+
+    mb schedule --to +15555550100 --text "See you tomorrow" --at 2026-10-02T09:00:00-05:00 --time-zone America/Chicago
+
+Automations answer a keyword, or message somebody when they join a list or get a tag. They
+are created switched off:
+
+    mb automation-create --name Hours --keyword hours --text "Open 9 to 5, Monday to Friday"
+    mb automation-create --name Welcome --tag new-customer --text "Welcome!" --wait 2d --follow-up "Any questions?"
+    mb automation --id <id>          # the steps, and who switching it on reaches
+    mb automation-on --id <id>
+
+The follow-up only goes to people who have not replied. Lists and tags: `mb lists`,
+`mb list-create --name Spring`, `mb list-add --list Spring --handles +1555...,+1555...`,
+`mb tags`, `mb tag --tag vip --handles +1555...`, `mb untag`, `mb list-remove`. What is
+queued or running: `mb announcements`, `mb scheduled`, `mb automation-runs --id <id>`.
+
 ## Rules
 
 - Only message people who expect to hear from this business: its customers, and people
@@ -53,6 +78,21 @@ Who has been answering: `mb activity --days 7` (needs a signed-in person, not a 
   Do not try to get around the limit.
 - The server honours STOP and other opt-outs. A refused send to somebody who opted out
   is final: do not retry it from another number.
+- Before any announcement, run `mb announce` and show the user the text and the preview:
+  how many people it reaches, how many are first contacts, and who is left out. Send with
+  `mb announce-send --confirm` only after they explicitly say yes to that number. The same
+  goes for `mb automation-on --include-existing`, and for `mb list-add` or `mb tag` when an
+  automation starts on that list or tag: those commands refuse without `--confirm`, and the
+  refusal says why. Never pass `--confirm` on the user's behalf.
+- Never automate messages to people who have not opted in to hearing from this business.
+  An automation on a list or tag messages everybody who is added to it later, too.
+- Schedule for the recipient's local time, not the user's or your own: morning where they
+  are, not in the middle of their night. Pass the time with their UTC offset for that date.
+- Explain first-contact pacing when it applies: people who have never messaged the number
+  go out at up to 50 a day per number (the preview gives the real figure), spaced a few
+  minutes apart, so a large first announcement takes days. That is expected, not a fault.
+  A project's first announcement, and its first automation that writes to people first,
+  wait for a person at Miss Blue to read them.
 - `--allow-duplicate` is only for a deliberate repeat. Do not use it to push a message
   through.
 - Never print, paste or read aloud an API key, a token, or
@@ -225,8 +265,181 @@ What we tried to send an endpoint, and what came back.
 
 - `--id <string>` Required. The endpoint id.
 
+### mb announcements
+
+Announcements (blasts) in this project, with how each is going.
+
+### mb announce
+
+Draft an announcement (one message to many people) and preview it. Sends nothing. Show the user the preview (how many people, how many are first contacts and how long their pacing takes, who is left out) and the exact text before `announce-send`.
+
+- `--text <string>` Required. The message. Everybody gets the same words.
+- `--to <string>` Phone numbers or emails, separated by commas.
+- `--list <string>` List ids or names, separated by commas. Everybody on them now.
+- `--tag <string>` Tags, separated by commas. Everybody carrying them now.
+- `--from <string>` Number id to send from. Defaults to your only number.
+- `--title <string>` An internal name. Nobody receiving it sees this.
+- `--at <string>` When to start, with a UTC offset: 2026-10-02T09:00:00-05:00. Otherwise when sent.
+- `--time-zone <string>` The zone --at was chosen in, like America/Chicago. Shown in the console.
+- `--reply-window-hours <number>` How long a reply still counts as a reply to it. 1 to 720, 72 by default.
+
+### mb announce-send
+
+Send a drafted announcement. Prints the preview again. Only after the user has seen the preview and the text and explicitly said yes: pass confirm. Without it nothing is sent.
+
+- `--id <string>` Required. The announcement id, from `announce` or `announcements`.
+- `--confirm` The user said yes to this preview. Without it, nothing is sent.
+
+### mb announce-cancel
+
+Cancel an announcement. One already sending stops; what went out stays out.
+
+- `--id <string>` Required. The announcement id.
+
+### mb scheduled
+
+Messages scheduled for later, and what became of them.
+
+### mb schedule
+
+Schedule one message for later. Pick a time that suits the recipient where they are.
+
+- `--to <string>` Required. Phone number or Apple ID email.
+- `--text <string>` Required. The message.
+- `--at <string>` Required. When, with the recipient's UTC offset: 2026-10-02T09:00:00-05:00.
+- `--time-zone <string>` The zone the time was chosen in, like America/Chicago. Shown in the console.
+- `--from <string>` Number id to send from. Defaults to your only number.
+
+### mb schedule-cancel
+
+Cancel a scheduled message that has not gone yet.
+
+- `--id <string>` Required. The scheduled message id, from `scheduled`.
+
+### mb automations
+
+Automations in this project: what starts each, its steps, and whether it is on.
+
+### mb automation
+
+One automation, and what switching it on would do: who it reaches now and how long first contacts take.
+
+- `--id <string>` Required. The automation id, from `automations`.
+
+### mb automation-create
+
+Create an automation, switched off. A keyword reply, or a message when somebody joins a list or gets a tag, then a wait, then a follow-up only if they did not reply. Only for people who asked to hear from this business.
+
+- `--name <string>` What to call it. Required unless --file has one.
+- `--file <string>` A JSON file with the whole automation, as the API takes it. Other flags are ignored.
+- `--keyword <string>` Reply when somebody texts one of these words. Separated by commas.
+- `--list <string>` Start when somebody joins this list. Id or name.
+- `--tag <string>` Start when somebody gets this tag.
+- `--trigger <string>` Or `first_message` (somebody new writes) or `conversation_opened` (any message).
+- `--text <string>` The first message it sends. Required unless --file.
+- `--wait <string>` How long before the follow-up: 30m, 36h, 2d. Up to 31 days.
+- `--follow-up <string>` A second message after --wait, sent only if they have not replied.
+- `--follow-up-anyway` Send the follow-up even to people who replied.
+- `--from <string>` Number id it sends from. For a list or tag, defaults to your only number.
+- `--allow-repeat` Let the same person go through it more than once.
+
+### mb automation-update
+
+Replace an automation's trigger and steps from a JSON file. People partway through keep their place.
+
+- `--id <string>` Required. The automation id.
+- `--file <string>` Required. A JSON file with the whole automation, as the API takes it.
+
+### mb automation-on
+
+Switch an automation on. Show the user what it will send and who it reaches first. With include_existing it also messages everybody already on the list or tag, which needs confirm after the user says yes.
+
+- `--id <string>` Required. The automation id.
+- `--include-existing` Also start it for everybody already on the list or carrying the tag.
+- `--confirm` The user said yes to messaging everybody already there.
+
+### mb automation-off
+
+Switch an automation off. Everybody partway through it stops.
+
+- `--id <string>` Required. The automation id.
+
+### mb automation-delete
+
+Delete an automation and everything partway through it. Ask the user first.
+
+- `--id <string>` Required. The automation id.
+
+### mb automation-runs
+
+Who is in an automation and how far they got, or which automations are messaging one person.
+
+- `--id <string>` The automation id. Required unless --handle.
+- `--status <string>` Only `running`, `done`, `stopped` or `failed`.
+- `--handle <string>` Instead: what is running for this person right now, across automations.
+- `--limit <number>` How many to show. 1 to 500, 100 by default.
+- `--offset <number>` How many to skip, for the next page.
+
+### mb automation-stop
+
+Take one person out of one automation. Everybody else carries on.
+
+- `--id <string>` Required. The automation id.
+- `--handle <string>` Required. Their phone number or email.
+
+### mb lists
+
+Lists in this project, and how many people are on each.
+
+### mb list-create
+
+Make a list.
+
+- `--name <string>` Required. Unique in this project.
+- `--description <string>` What it is for.
+
+### mb list-members
+
+Who is on a list, newest first.
+
+- `--list <string>` Required. List id or name.
+
+### mb list-add
+
+Add people to a list. If an automation starts on this list, each new person is messaged, so that needs confirm after the user says yes.
+
+- `--list <string>` Required. List id or name.
+- `--handles <string>` Required. Phone numbers or emails, separated by commas.
+- `--confirm` The user said yes to the automation messaging them.
+
+### mb list-remove
+
+Take somebody off a list. An automation they are in carries on.
+
+- `--list <string>` Required. List id or name.
+- `--handle <string>` Required. Their phone number or email.
+
+### mb tags
+
+Tags in this project, and how many people carry each.
+
+### mb tag
+
+Tag people. If an automation starts on this tag, each newly tagged person is messaged, so that needs confirm after the user says yes.
+
+- `--tag <string>` Required. The tag. Case and extra spaces do not matter.
+- `--handles <string>` Required. Phone numbers or emails, separated by commas.
+- `--confirm` The user said yes to the automation messaging them.
+
+### mb untag
+
+Take a tag off somebody.
+
+- `--tag <string>` Required. The tag.
+- `--handle <string>` Required. Their phone number or email.
+
 ### mb mcp
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.40 818a6df8f2d061ff -->
+<!-- mb skill 0.2.41 9d7b7a558e84d1e1 -->

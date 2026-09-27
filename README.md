@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.40**
+Current version: **0.2.41**
 
 ## Install
 
@@ -72,7 +72,7 @@ Claude Code:
 claude mcp add missblue -- mb mcp --project <project-id>
 ```
 
-Setup for Codex, OpenCode, Cursor, Claude Desktop, VS Code, Windsurf and
+Setup for Codex, OpenCode, Cursor, Claude Desktop, VS Code and
 Gemini CLI: https://missblue.dev/docs/cli
 
 ## Commands
@@ -104,68 +104,150 @@ AI AGENTS
   MISS_BLUE_API_URL  Another server; defaults to the hosted API.
 
 COMMANDS
-  whoami           What this key is, and which project it holds.
-  numbers          The numbers this project holds.
-  send             Send an iMessage.
-                     --to              Phone number, Apple ID email, or a chat_id. (required)
-                     --text            The message. Optional only when sending a file.
-                     --from            Number id to send from. Defaults to your only number.
-                     --file            A file to send. Uploaded first, then sent.
-                     --allow-duplicate Send although the same text went there moments ago.
-  threads          Conversations, most recent first.
-  thread           Every message in one conversation.
-                     --chat-id         From `threads`. (required)
-  messages         Recent messages across this project's numbers.
-  message          One message, including its delivery state and the Mac build that handled it.
-                     --id              The message id. (required)
-  workspaces       The businesses you belong to.
-  projects         The projects in a workspace.
-                     --workspace       Workspace id, from `workspaces`. (required)
-  activity         Who has been answering a project's numbers, and how much.
-                     --project         Project id, from `projects`. The chosen project by default.
-                     --days            How far back to count. 1 to 365, 30 by default.
-  member-activity  One person: what they sent, who to, and the messages.
-                     --project         Project id, from `projects`. The chosen project by default.
-                     --user            Whose work to report, from `activity`. (required)
-                     --days            How far back to count. 1 to 365, 30 by default.
-  problems         Sends that failed, or are still waiting for a Mac.
-                     --only            `queued` or `failed`.
-  lookup           Whether iMessage is known to reach a handle. Answered from your own traffic, not from Apple.
-                     --handle          Phone number or Apple ID email. (required)
-  typing           Show or hide the typing bubble in a conversation.
-                     --chat-id         The conversation. (required)
-                     --off             Hide it rather than show it.
-  read             Tell the customer their message was seen. Only when a human has looked.
-                     --chat-id         The conversation. (required)
-                     --unread          Mark unread again.
-  react            Add or remove a tapback on a message.
-                     --id              The message id. (required)
-                     --reaction        heart, like, dislike, laugh, emphasize, question. Defaults to heart.
-                     --remove          Take it back.
-  unsend           Unsend a message, inside Apple's two-minute window.
-                     --id              The message id. (required)
-  edit             Change what a sent message says, inside Apple's fifteen-minute window.
-                     --id              The message id. (required)
-                     --text            The replacement text. An empty edit is not an unsend, and is refused. (required)
-  label            Name a number, so threads say which line they arrived on.
-                     --id              The number id. (required)
-                     --label           Empty clears it back to the bare handle.
-  contacts         Names this project has given handles. Shared by everyone on it.
-  name             Name a handle, or rename one already named.
-                     --handle          Phone number or Apple ID email. (required)
-                     --name            What to call them. (required)
-  forget           Remove a name from the project's book.
-                     --id              The contact id, from `contacts`. (required)
-  webhooks         The endpoints this project sends events to.
-  webhook-add      Register where events should go.
-                     --url             https, and not a private address. (required)
-  webhook-rm       Stop sending to an endpoint.
-                     --id              The endpoint id. (required)
-  deliveries       What we tried to send an endpoint, and what came back.
-                     --id              The endpoint id. (required)
+  whoami             What this key is, and which project it holds.
+  numbers            The numbers this project holds.
+  send               Send an iMessage.
+                       --to              Phone number, Apple ID email, or a chat_id. (required)
+                       --text            The message. Optional only when sending a file.
+                       --from            Number id to send from. Defaults to your only number.
+                       --file            A file to send. Uploaded first, then sent.
+                       --allow-duplicate Send although the same text went there moments ago.
+  threads            Conversations, most recent first.
+  thread             Every message in one conversation.
+                       --chat-id         From `threads`. (required)
+  messages           Recent messages across this project's numbers.
+  message            One message, including its delivery state and the Mac build that handled it.
+                       --id              The message id. (required)
+  workspaces         The businesses you belong to.
+  projects           The projects in a workspace.
+                       --workspace       Workspace id, from `workspaces`. (required)
+  activity           Who has been answering a project's numbers, and how much.
+                       --project         Project id, from `projects`. The chosen project by default.
+                       --days            How far back to count. 1 to 365, 30 by default.
+  member-activity    One person: what they sent, who to, and the messages.
+                       --project         Project id, from `projects`. The chosen project by default.
+                       --user            Whose work to report, from `activity`. (required)
+                       --days            How far back to count. 1 to 365, 30 by default.
+  problems           Sends that failed, or are still waiting for a Mac.
+                       --only            `queued` or `failed`.
+  lookup             Whether iMessage is known to reach a handle. Answered from your own traffic, not from Apple.
+                       --handle          Phone number or Apple ID email. (required)
+  typing             Show or hide the typing bubble in a conversation.
+                       --chat-id         The conversation. (required)
+                       --off             Hide it rather than show it.
+  read               Tell the customer their message was seen. Only when a human has looked.
+                       --chat-id         The conversation. (required)
+                       --unread          Mark unread again.
+  react              Add or remove a tapback on a message.
+                       --id              The message id. (required)
+                       --reaction        heart, like, dislike, laugh, emphasize, question. Defaults to heart.
+                       --remove          Take it back.
+  unsend             Unsend a message, inside Apple's two-minute window.
+                       --id              The message id. (required)
+  edit               Change what a sent message says, inside Apple's fifteen-minute window.
+                       --id              The message id. (required)
+                       --text            The replacement text. An empty edit is not an unsend, and is refused. (required)
+  label              Name a number, so threads say which line they arrived on.
+                       --id              The number id. (required)
+                       --label           Empty clears it back to the bare handle.
+  contacts           Names this project has given handles. Shared by everyone on it.
+  name               Name a handle, or rename one already named.
+                       --handle          Phone number or Apple ID email. (required)
+                       --name            What to call them. (required)
+  forget             Remove a name from the project's book.
+                       --id              The contact id, from `contacts`. (required)
+  webhooks           The endpoints this project sends events to.
+  webhook-add        Register where events should go.
+                       --url             https, and not a private address. (required)
+  webhook-rm         Stop sending to an endpoint.
+                       --id              The endpoint id. (required)
+  deliveries         What we tried to send an endpoint, and what came back.
+                       --id              The endpoint id. (required)
+  announcements      Announcements (blasts) in this project, with how each is going.
+  announce           Draft an announcement (one message to many people) and preview it. Sends nothing. Show the user the preview (how many people, how many are first contacts and how long their pacing takes, who is left out) and the exact text before `announce-send`.
+                       --text            The message. Everybody gets the same words. (required)
+                       --to              Phone numbers or emails, separated by commas.
+                       --list            List ids or names, separated by commas. Everybody on them now.
+                       --tag             Tags, separated by commas. Everybody carrying them now.
+                       --from            Number id to send from. Defaults to your only number.
+                       --title           An internal name. Nobody receiving it sees this.
+                       --at              When to start, with a UTC offset: 2026-10-02T09:00:00-05:00. Otherwise when sent.
+                       --time-zone       The zone --at was chosen in, like America/Chicago. Shown in the console.
+                       --reply-window-hoursHow long a reply still counts as a reply to it. 1 to 720, 72 by default.
+  announce-send      Send a drafted announcement. Prints the preview again. Only after the user has seen the preview and the text and explicitly said yes: pass confirm. Without it nothing is sent.
+                       --id              The announcement id, from `announce` or `announcements`. (required)
+                       --confirm         The user said yes to this preview. Without it, nothing is sent.
+  announce-cancel    Cancel an announcement. One already sending stops; what went out stays out.
+                       --id              The announcement id. (required)
+  scheduled          Messages scheduled for later, and what became of them.
+  schedule           Schedule one message for later. Pick a time that suits the recipient where they are.
+                       --to              Phone number or Apple ID email. (required)
+                       --text            The message. (required)
+                       --at              When, with the recipient's UTC offset: 2026-10-02T09:00:00-05:00. (required)
+                       --time-zone       The zone the time was chosen in, like America/Chicago. Shown in the console.
+                       --from            Number id to send from. Defaults to your only number.
+  schedule-cancel    Cancel a scheduled message that has not gone yet.
+                       --id              The scheduled message id, from `scheduled`. (required)
+  automations        Automations in this project: what starts each, its steps, and whether it is on.
+  automation         One automation, and what switching it on would do: who it reaches now and how long first contacts take.
+                       --id              The automation id, from `automations`. (required)
+  automation-create  Create an automation, switched off. A keyword reply, or a message when somebody joins a list or gets a tag, then a wait, then a follow-up only if they did not reply. Only for people who asked to hear from this business.
+                       --name            What to call it. Required unless --file has one.
+                       --file            A JSON file with the whole automation, as the API takes it. Other flags are ignored.
+                       --keyword         Reply when somebody texts one of these words. Separated by commas.
+                       --list            Start when somebody joins this list. Id or name.
+                       --tag             Start when somebody gets this tag.
+                       --trigger         Or `first_message` (somebody new writes) or `conversation_opened` (any message).
+                       --text            The first message it sends. Required unless --file.
+                       --wait            How long before the follow-up: 30m, 36h, 2d. Up to 31 days.
+                       --follow-up       A second message after --wait, sent only if they have not replied.
+                       --follow-up-anywaySend the follow-up even to people who replied.
+                       --from            Number id it sends from. For a list or tag, defaults to your only number.
+                       --allow-repeat    Let the same person go through it more than once.
+  automation-update  Replace an automation's trigger and steps from a JSON file. People partway through keep their place.
+                       --id              The automation id. (required)
+                       --file            A JSON file with the whole automation, as the API takes it. (required)
+  automation-on      Switch an automation on. Show the user what it will send and who it reaches first. With include_existing it also messages everybody already on the list or tag, which needs confirm after the user says yes.
+                       --id              The automation id. (required)
+                       --include-existingAlso start it for everybody already on the list or carrying the tag.
+                       --confirm         The user said yes to messaging everybody already there.
+  automation-off     Switch an automation off. Everybody partway through it stops.
+                       --id              The automation id. (required)
+  automation-delete  Delete an automation and everything partway through it. Ask the user first.
+                       --id              The automation id. (required)
+  automation-runs    Who is in an automation and how far they got, or which automations are messaging one person.
+                       --id              The automation id. Required unless --handle.
+                       --status          Only `running`, `done`, `stopped` or `failed`.
+                       --handle          Instead: what is running for this person right now, across automations.
+                       --limit           How many to show. 1 to 500, 100 by default.
+                       --offset          How many to skip, for the next page.
+  automation-stop    Take one person out of one automation. Everybody else carries on.
+                       --id              The automation id. (required)
+                       --handle          Their phone number or email. (required)
+  lists              Lists in this project, and how many people are on each.
+  list-create        Make a list.
+                       --name            Unique in this project. (required)
+                       --description     What it is for.
+  list-members       Who is on a list, newest first.
+                       --list            List id or name. (required)
+  list-add           Add people to a list. If an automation starts on this list, each new person is messaged, so that needs confirm after the user says yes.
+                       --list            List id or name. (required)
+                       --handles         Phone numbers or emails, separated by commas. (required)
+                       --confirm         The user said yes to the automation messaging them.
+  list-remove        Take somebody off a list. An automation they are in carries on.
+                       --list            List id or name. (required)
+                       --handle          Their phone number or email. (required)
+  tags               Tags in this project, and how many people carry each.
+  tag                Tag people. If an automation starts on this tag, each newly tagged person is messaged, so that needs confirm after the user says yes.
+                       --tag             The tag. Case and extra spaces do not matter. (required)
+                       --handles         Phone numbers or emails, separated by commas. (required)
+                       --confirm         The user said yes to the automation messaging them.
+  untag              Take a tag off somebody.
+                       --tag             The tag. (required)
+                       --handle          Their phone number or email. (required)
 
-  mcp              Serve MCP over stdio, exposing every command above as a tool.
-                     --project <id>    Pin the project this agent acts on.
+  mcp                Serve MCP over stdio, exposing every command above as a tool.
+                       --project <id>    Pin the project this agent acts on.
 
 DOCS
   https://missblue.dev/docs
