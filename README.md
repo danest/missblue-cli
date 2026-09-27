@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.43**
+Current version: **0.2.44**
 
 ## Install
 
@@ -112,12 +112,16 @@ COMMANDS
                        --from            Number id to send from. Defaults to your only number.
                        --file            A file to send. Uploaded first, then sent.
                        --allow-duplicate Send although the same text went there moments ago.
+                       --wait            Wait until it is `sent`, `delivered` or `read`, then print it. Exits with an error if that has not happened in time.
+                       --timeout         How long --wait waits: 90s, 5m. A minute by default, at most 10 minutes.
   threads            Conversations, most recent first.
   thread             Every message in one conversation.
                        --chat-id         From `threads`. (required)
   messages           Recent messages across this project's numbers.
-  message            One message, including its delivery state and the Mac build that handled it.
+  message            One message, including when it was sent, delivered and read, and the Mac build that handled it.
                        --id              The message id. (required)
+                       --wait            Wait until it is `sent`, `delivered` or `read`. Exits with an error if that has not happened in time.
+                       --timeout         How long --wait waits: 90s, 5m. A minute by default, at most 10 minutes.
   workspaces         The businesses you belong to.
   projects           The projects in a workspace.
                        --workspace       Workspace id, from `workspaces`. (required)
@@ -151,9 +155,20 @@ COMMANDS
                        --id              The number id. (required)
                        --label           Empty clears it back to the bare handle.
   contacts           Names this project has given handles. Shared by everyone on it.
-  name               Name a handle, or rename one already named.
+  name               Name a handle, or rename one. contact-add does the same and says what it queued for Apple Contacts.
                        --handle          Phone number or Apple ID email. (required)
                        --name            What to call them. (required)
+  contact-add        Add a contact, or rename one, and queue them for Apple Contacts on this project's numbers, so Messages shows their name. Prints what was queued and how to check.
+                       --handle          Phone number or Apple ID email. (required)
+                       --name            Their full name. Or give --first-name and --last-name.
+                       --first-name      Their first name.
+                       --last-name       Their last name.
+                       --no-sync         Save them in Miss Blue only, not in Apple Contacts.
+  contact            One contact, and whether Apple Contacts on each of this project's numbers has them yet: queued, synced or failed.
+                       --handle          Phone number or Apple ID email. (required)
+  contact-sync       Put a saved contact in Apple Contacts again, on each of this project's numbers or one of them, and wait for each to answer. For a number that did not take it.
+                       --handle          Phone number or Apple ID email. (required)
+                       --from            Only this number id. Every number of this project by default.
   forget             Remove a name from the project's book.
                        --id              The contact id, from `contacts`. (required)
   webhooks           The endpoints this project sends events to.

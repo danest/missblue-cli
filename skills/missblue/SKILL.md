@@ -1,6 +1,6 @@
 ---
 name: missblue
-description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered, look up whether a number has iMessage, manage contacts and webhooks, and run campaigns (announcements to a list, scheduled messages, automations, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
+description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered or read, look up whether a number has iMessage, add contacts to Apple Contacts and tag them, manage webhooks, and run campaigns (announcements to a list, scheduled messages, automations, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
 ---
 
 # Miss Blue
@@ -34,11 +34,35 @@ Reply in a conversation: find it with `mb threads`, read it with
 
 Check what happened after sending:
 
-    mb message --id <message id>     # delivery state of one message
+    mb message --id <message id>     # its delivery: when it was sent, delivered and read
     mb problems                      # everything that failed or is still waiting
 
 Look up whether a number is known to have iMessage: `mb lookup +15555550100`.
-Contacts: `mb contacts`, `mb name --handle +1555... --name "Dana"`, `mb forget --id <id>`.
+Contacts: `mb contacts`, `mb contact-add`, `mb contact`, `mb forget --id <id>`.
+
+## The basics
+
+Add a contact. It is saved to the project and queued for Apple Contacts on the project's
+numbers, so Messages there shows their name instead of the number. `mb contact` shows each
+number as queued, then synced, or failed and why:
+
+    mb contact-add --handle +15555550100 --first-name Ada --last-name Lovelace
+    mb contact --handle +15555550100
+    mb contact-sync --handle +15555550100     # push again to a number that did not take it
+
+`--no-sync` keeps a contact in Miss Blue only. Then tag them, message them, and see what
+happened:
+
+    mb tag --tag vip --handles +15555550100
+    mb send --to +15555550100 --text "Hi Ada, your order is ready" --wait delivered
+    mb message --id <message id> --wait read --timeout 10m
+
+`--wait` takes `sent`, `delivered` or `read`, and stops at its `--timeout` (a minute unless
+you say, ten at most) with an error that says where the message got to. After
+`mb send --wait` the message was accepted even when the wait runs out. Read receipts only appear
+if the recipient has them turned on, so `read` may never come; say so rather than waiting
+again. Their reply is in `mb thread --chat-id <chat_id>`: the send's answer carries the
+chat_id, and `mb threads` lists conversations, newest first.
 Webhooks: `mb webhooks`, `mb webhook-add --url https://...`, `mb deliveries --id <id>`.
 Who has been answering: `mb activity --days 7` (needs a signed-in person, not a key).
 
@@ -112,6 +136,8 @@ queued or running: `mb announcements`, `mb scheduled`, `mb automation-runs --id 
   project, and it moved to another of the project's numbers or was switched off.
 - `--allow-duplicate` is only for a deliberate repeat. Do not use it to push a message
   through.
+- Never send a message again because `--wait` ran out or it is still pending: it was sent,
+  or is waiting for its number, and goes out on its own. Check it with `mb message --id`.
 - Never print, paste or read aloud an API key, a token, or
   `~/.config/miss-blue/credentials.json`.
 - After sending, check `mb problems` (or `mb message --id <id>`) and tell the user plainly
@@ -143,6 +169,8 @@ Send an iMessage.
 - `--from <string>` Number id to send from. Defaults to your only number.
 - `--file <string>` A file to send. Uploaded first, then sent.
 - `--allow-duplicate` Send although the same text went there moments ago.
+- `--wait <string>` Wait until it is `sent`, `delivered` or `read`, then print it. Exits with an error if that has not happened in time.
+- `--timeout <string>` How long --wait waits: 90s, 5m. A minute by default, at most 10 minutes.
 
 ### mb threads
 
@@ -160,9 +188,11 @@ Recent messages across this project's numbers.
 
 ### mb message
 
-One message, including its delivery state and the Mac build that handled it.
+One message, including when it was sent, delivered and read, and the Mac build that handled it.
 
 - `--id <string>` Required. The message id.
+- `--wait <string>` Wait until it is `sent`, `delivered` or `read`. Exits with an error if that has not happened in time.
+- `--timeout <string>` How long --wait waits: 90s, 5m. A minute by default, at most 10 minutes.
 
 ### mb workspaces
 
@@ -249,10 +279,33 @@ Names this project has given handles. Shared by everyone on it.
 
 ### mb name
 
-Name a handle, or rename one already named.
+Name a handle, or rename one. contact-add does the same and says what it queued for Apple Contacts.
 
 - `--handle <string>` Required. Phone number or Apple ID email.
 - `--name <string>` Required. What to call them.
+
+### mb contact-add
+
+Add a contact, or rename one, and queue them for Apple Contacts on this project's numbers, so Messages shows their name. Prints what was queued and how to check.
+
+- `--handle <string>` Required. Phone number or Apple ID email.
+- `--name <string>` Their full name. Or give --first-name and --last-name.
+- `--first-name <string>` Their first name.
+- `--last-name <string>` Their last name.
+- `--no-sync` Save them in Miss Blue only, not in Apple Contacts.
+
+### mb contact
+
+One contact, and whether Apple Contacts on each of this project's numbers has them yet: queued, synced or failed.
+
+- `--handle <string>` Required. Phone number or Apple ID email.
+
+### mb contact-sync
+
+Put a saved contact in Apple Contacts again, on each of this project's numbers or one of them, and wait for each to answer. For a number that did not take it.
+
+- `--handle <string>` Required. Phone number or Apple ID email.
+- `--from <string>` Only this number id. Every number of this project by default.
 
 ### mb forget
 
@@ -482,4 +535,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.43 17ff1cce0dfe8ee0 -->
+<!-- mb skill 0.2.44 2df20833242f3cb6 -->
