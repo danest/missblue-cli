@@ -185,6 +185,10 @@ version's results stay. `automation-update --text` replaces the steps and ends a
   Do not try to get around the limit.
 - The server honours STOP and other opt-outs. A refused send to somebody who opted out
   is final: do not retry it from another number.
+- When somebody asks you to stop, in any words ("stop texting me", "not interested, take
+  me off", "wrong person, leave me alone"), run `mb opt-out --handle <them> --note "<what
+  they said>"` straight away, before anything else, and do not message them again. It is
+  safe to run when Miss Blue already caught it.
 - Before any announcement, run `mb announce` and show the user the text and the preview:
   how many people it reaches, how many are first contacts, and who is left out. Send with
   `mb announce-send --confirm` only after they explicitly say yes to that number. The same
@@ -385,6 +389,36 @@ Put a saved contact in Apple Contacts again, on each of this project's numbers o
 Remove a name from the project's book.
 
 - `--id <string>` Required. The contact id, from `contacts`.
+
+### mb opt-outs
+
+Everybody this project will not message, and how each asked: a reply Miss Blue understood (keyword) or one added by hand or by key (staff).
+
+### mb opt-out
+
+Stop messaging somebody who asked not to be messaged, however they asked. Anything already queued to them is cancelled, and every later send to them is refused. Do this whenever somebody asks you to stop, in any words.
+
+- `--handle <string>` Required. Phone number or email address. No saved contact needed.
+- `--note <string>` How they asked, for whoever reads the list later.
+
+### mb opt-out-remove
+
+Message somebody again after they opted out, because they asked to start again: confirm with the person you work for first. Needs a key made by an owner or admin of the organization.
+
+- `--handle <string>` Required. Phone number or email address.
+- `--note <string>` Required. How they asked to start again, for example "texted START on 9/27".
+
+### mb block
+
+Block a saved contact across the whole organization: nothing is sent to them from any number, and anything queued is cancelled.
+
+- `--handle <string>` Required. Phone number or Apple ID email of a saved contact.
+
+### mb unblock
+
+Lift a block, so the organization may message this contact again. Confirm with the person you work for first. Needs a key made by an owner or admin of the organization.
+
+- `--handle <string>` Required. Phone number or Apple ID email of a saved contact.
 
 ### mb webhooks
 
@@ -660,4 +694,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.48 cdd22bf040511537 -->
+<!-- mb skill 0.2.49 096c787dde963936 -->

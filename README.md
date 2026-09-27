@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.48**
+Current version: **0.2.49**
 
 ## Install
 
@@ -172,6 +172,17 @@ COMMANDS
                         --from            Only this number id. Every number of this project by default.
   forget              Remove a name from the project's book.
                         --id              The contact id, from `contacts`. (required)
+  opt-outs            Everybody this project will not message, and how each asked: a reply Miss Blue understood (keyword) or one added by hand or by key (staff).
+  opt-out             Stop messaging somebody who asked not to be messaged, however they asked. Anything already queued to them is cancelled, and every later send to them is refused. Do this whenever somebody asks you to stop, in any words.
+                        --handle          Phone number or email address. No saved contact needed. (required)
+                        --note            How they asked, for whoever reads the list later.
+  opt-out-remove      Message somebody again after they opted out, because they asked to start again: confirm with the person you work for first. Needs a key made by an owner or admin of the organization.
+                        --handle          Phone number or email address. (required)
+                        --note            How they asked to start again, for example "texted START on 9/27". (required)
+  block               Block a saved contact across the whole organization: nothing is sent to them from any number, and anything queued is cancelled.
+                        --handle          Phone number or Apple ID email of a saved contact. (required)
+  unblock             Lift a block, so the organization may message this contact again. Confirm with the person you work for first. Needs a key made by an owner or admin of the organization.
+                        --handle          Phone number or Apple ID email of a saved contact. (required)
   webhooks            The endpoints this project sends events to.
   webhook-add         Register where events should go.
                         --url             https, and not a private address. (required)
