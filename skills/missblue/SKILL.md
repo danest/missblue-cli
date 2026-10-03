@@ -5,6 +5,18 @@ description: Send and read iMessages from the user's Miss Blue business numbers 
 
 # Miss Blue
 
+Staff can set up organization-owned Twilio SMS overflow and browser calls with
+`mb staff-organizations` and `mb twilio`. Use a staff login. Configure from a
+private file: `mb twilio --organization <id> --action configure --env-file .env`.
+The file contains TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET,
+and TWILIO_AUTH_TOKEN; chmod 600 it and keep it ignored by git. Never paste
+secrets into tool arguments, logs, screenshots or pull requests. Use actions
+`numbers`, `import`, `limits`, `enable`, `disable`, `voice-setup`, `voice-number`
+and `status`; `mb twilio --help` lists required fields. Connecting a number
+replaces its inbound callbacks. Select the intended organization and project.
+iMessage gets new conversations first; Twilio handles new overflow conversations.
+Replies, scheduled messages and follow-ups keep their original sender.
+
 Miss Blue sends real iMessages, with SMS as a fallback, from the user's own business
 numbers. `mb` is its command line. Every command prints JSON.
 
@@ -229,6 +241,27 @@ same names. Use whichever you have; the rules above apply either way.
 ## Every command
 
 Generated from this mb build, so it matches what `mb help` lists. Flags use dashes on the command line; the MCP tool of the same name takes the same arguments with underscores.
+
+### mb staff-organizations
+
+Staff: list organizations for administration.
+
+### mb twilio
+
+Staff: configure an organization’s Twilio connection, project numbers, SMS limits and calling. Connecting a number replaces its incoming webhook; confirm the organization and number first.
+
+- `--organization <string>` Required. Organization UUID; staff login required.
+- `--action <string>` Required. status, configure, connect, enable, disable, numbers, import, limits, voice-setup or voice-number.
+- `--env-file <string>` Private dotenv file containing TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET and TWILIO_AUTH_TOKEN. Alternative to credentials_file.
+- `--credentials-file <string>` Local private JSON file with account_sid, api_key_sid, api_key_secret and auth_token. Secrets are never printed. Do not pass secrets as arguments.
+- `--voice` Include incoming/outgoing phone calls in connect-all setup.
+- `--number <string>` Miss Blue number UUID for limits or voice-number.
+- `--phone-sid <string>` Twilio PN SID to import.
+- `--project <string>` Project UUID in this organization.
+- `--new-contact-limit <number>` New people per rolling 24 hours.
+- `--daily-message-limit <number>` All messages per rolling 24 hours.
+- `--interval-ms <number>` Minimum milliseconds between sends.
+- `--enabled` Enable voice for the selected number.
 
 ### mb whoami
 
@@ -558,7 +591,7 @@ Change one project setting: opt-out-detection on or off, auto-typing on or off, 
 
 ### mb sending-stats
 
-How much each of this project's numbers has sent today, and how much it may still send.
+Each of this project's numbers: sent and received today, how many new people it has messaged of its daily limit, how many first messages are waiting, and when it can message the next new person (next_new_contact_at).
 
 ### mb traffic
 
@@ -929,4 +962,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.50 2916b4180d00d4fc -->
+<!-- mb skill 0.2.51 80b5123a6aa4f0b5 -->
