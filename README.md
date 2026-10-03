@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.52**
+Current version: **0.2.53**
 
 ## Install
 
@@ -247,8 +247,8 @@ COMMANDS
   project              This project: its numbers, its settings, and your role in it.
   project-rename       Rename this project. Needs a key made by an owner or admin.
                          --name             The new name. (required)
-  setting              Change one project setting: opt-out-detection on or off, auto-typing on or off, or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
-                         --name             opt-out-detection, auto-typing or sender-routing. (required)
+  setting              Change one project setting: opt-out-detection on or off, auto-typing on or off, one-automation-at-a-time on or off (nobody is started on a list or tag automation while partway through another), or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
+                         --name             opt-out-detection, auto-typing, one-automation-at-a-time or sender-routing. (required)
                          --value            on or off; single or round-robin for sender-routing. (required)
   sending-stats        Each of this project's numbers: sent and received today, how many new people it has messaged of its daily limit, how many first messages are waiting, and when it can message the next new person (next_new_contact_at).
   traffic              Messages in and out over time, per day.
@@ -347,11 +347,13 @@ COMMANDS
                          --from             Number id it sends from. A list or tag automation without one sends from Auto: each person gets the best of this project's numbers.
                          --stop-on-reply    End a person's run as soon as they reply. On unless you pass --stop-on-reply false.
                          --allow-repeat     Let the same person go through it more than once.
+                         --skip-recent-days A list or tag automation leaves out anybody who wrote to this project in the last this many days (1 to 365), since they are already talking to you. `off` turns it off. 7 on a new list or tag automation unless given, except with --file, which is saved as written.
+                         --exit-tags        Tags that keep people out, separated by commas, like paid,booked. It does not start for anybody with one, and anybody in it leaves when one is added, with what it had waiting called off. `none` clears them.
                          --hours            Only send between these times, like 08:00-18:00 or 9am-5pm. A message due outside them waits until they open; what starts it still starts it at any time.
                          --time-zone        The zone --hours are in, like America/Chicago. Eastern (America/New_York) unless given.
                          --days             The days it sends on, with --hours: mon-fri, mon,wed,fri or weekends. Every day unless given.
                          --any-time         Send at any hour, with no --hours. The default.
-  automation-update    Change an automation. Pass only what changes: --name, --from, --stop-on-reply, --allow-repeat or the hours flags alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their step number.
+  automation-update    Change an automation. Pass only what changes: --name, --from, --stop-on-reply, --allow-repeat, --skip-recent-days, --exit-tags or the hours flags alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their step number.
                          --id               The automation id. (required)
                          --file             A JSON file with the whole automation, as the API takes it.
                          --name             A new name.
@@ -372,6 +374,8 @@ COMMANDS
                          --from             Number id it sends from, or `auto` for Auto.
                          --stop-on-reply    End a person's run as soon as they reply: true or false. Absent keeps what it has.
                          --allow-repeat     Let the same person go through it more than once.
+                         --skip-recent-days A list or tag automation leaves out anybody who wrote to this project in the last this many days (1 to 365), since they are already talking to you. `off` turns it off. 7 on a new list or tag automation unless given, except with --file, which is saved as written.
+                         --exit-tags        Tags that keep people out, separated by commas, like paid,booked. It does not start for anybody with one, and anybody in it leaves when one is added, with what it had waiting called off. `none` clears them.
                          --hours            Only send between these times, like 08:00-18:00 or 9am-5pm. Keeps its zone and days unless you change them.
                          --time-zone        The zone its hours are in, like America/Chicago. Eastern (America/New_York) for new hours unless given.
                          --days             The days it sends on: mon-fri, mon,wed,fri or weekends. Needs hours, given now or already set.
@@ -390,6 +394,8 @@ COMMANDS
                          --handle           Instead: what is running for this person right now, across automations.
                          --limit            How many to show. 1 to 500, 100 by default.
                          --offset           How many to skip, for the next page.
+  automation-status    One person and this project's automations: which they are in, how the last ones ended and why, whether they are free to start one, and for each automation whether it would start for them now or what stops it.
+                         --handle           Their phone number or email. (required)
   automation-stats     How an automation is doing, step by step: sent, delivered, read (opened), replied and opted out, with reply and opt-out rates, and how people's runs ended. Read only counts people with read receipts on, so it is at least that many.
                          --id               The automation id, from `automations`. (required)
                          --days             Count messages sent in the last this many days. 1 to 365, 30 by default.

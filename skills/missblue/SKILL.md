@@ -112,6 +112,15 @@ have not answered since the message before it; `--follow-up-if` picks another co
 `--stop-on-reply false`. Change one thing at a time with `mb automation-update --id <id>`
 and only that flag, for example `--stop-on-reply false` or `--from auto`.
 
+Who an automation leaves out: a new list or tag automation skips anybody who wrote to the
+project in the last 7 days, since they are already talking to you (`--skip-recent-days 14`
+changes it, `off` turns it off). `--exit-tags paid,booked` keeps anybody with one of those
+tags out, and takes them out the moment one is added. `mb setting --name
+one-automation-at-a-time --value on` keeps anybody partway through one automation out of
+list and tag automations until it finishes. Before tagging somebody, or when nothing went
+to them, `mb automation-status --handle +1555...` says which automations they are in, how
+the last ones ended and why, and whether each automation would start for them.
+
 Announcements, scheduled messages and automation steps are Liquid, filled in for each person
 at the moment that message sends. `{{ contact.first_name }}`, `{{ contact.last_name }}` and
 `{{ contact.name }}` come from their contact, and so do the contact's own fields, as
@@ -584,9 +593,9 @@ Rename this project. Needs a key made by an owner or admin.
 
 ### mb setting
 
-Change one project setting: opt-out-detection on or off, auto-typing on or off, or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
+Change one project setting: opt-out-detection on or off, auto-typing on or off, one-automation-at-a-time on or off (nobody is started on a list or tag automation while partway through another), or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
 
-- `--name <string>` Required. opt-out-detection, auto-typing or sender-routing.
+- `--name <string>` Required. opt-out-detection, auto-typing, one-automation-at-a-time or sender-routing.
 - `--value <string>` Required. on or off; single or round-robin for sender-routing.
 
 ### mb sending-stats
@@ -799,6 +808,8 @@ Create an automation, switched off. A keyword reply, or a message when somebody 
 - `--from <string>` Number id it sends from. A list or tag automation without one sends from Auto: each person gets the best of this project's numbers.
 - `--stop-on-reply` End a person's run as soon as they reply. On unless you pass --stop-on-reply false.
 - `--allow-repeat` Let the same person go through it more than once.
+- `--skip-recent-days <string>` A list or tag automation leaves out anybody who wrote to this project in the last this many days (1 to 365), since they are already talking to you. `off` turns it off. 7 on a new list or tag automation unless given, except with --file, which is saved as written.
+- `--exit-tags <string>` Tags that keep people out, separated by commas, like paid,booked. It does not start for anybody with one, and anybody in it leaves when one is added, with what it had waiting called off. `none` clears them.
 - `--hours <string>` Only send between these times, like 08:00-18:00 or 9am-5pm. A message due outside them waits until they open; what starts it still starts it at any time.
 - `--time-zone <string>` The zone --hours are in, like America/Chicago. Eastern (America/New_York) unless given.
 - `--days <string>` The days it sends on, with --hours: mon-fri, mon,wed,fri or weekends. Every day unless given.
@@ -806,7 +817,7 @@ Create an automation, switched off. A keyword reply, or a message when somebody 
 
 ### mb automation-update
 
-Change an automation. Pass only what changes: --name, --from, --stop-on-reply, --allow-repeat or the hours flags alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their step number.
+Change an automation. Pass only what changes: --name, --from, --stop-on-reply, --allow-repeat, --skip-recent-days, --exit-tags or the hours flags alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their step number.
 
 - `--id <string>` Required. The automation id.
 - `--file <string>` A JSON file with the whole automation, as the API takes it.
@@ -828,6 +839,8 @@ Change an automation. Pass only what changes: --name, --from, --stop-on-reply, -
 - `--from <string>` Number id it sends from, or `auto` for Auto.
 - `--stop-on-reply` End a person's run as soon as they reply: true or false. Absent keeps what it has.
 - `--allow-repeat` Let the same person go through it more than once.
+- `--skip-recent-days <string>` A list or tag automation leaves out anybody who wrote to this project in the last this many days (1 to 365), since they are already talking to you. `off` turns it off. 7 on a new list or tag automation unless given, except with --file, which is saved as written.
+- `--exit-tags <string>` Tags that keep people out, separated by commas, like paid,booked. It does not start for anybody with one, and anybody in it leaves when one is added, with what it had waiting called off. `none` clears them.
 - `--hours <string>` Only send between these times, like 08:00-18:00 or 9am-5pm. Keeps its zone and days unless you change them.
 - `--time-zone <string>` The zone its hours are in, like America/Chicago. Eastern (America/New_York) for new hours unless given.
 - `--days <string>` The days it sends on: mon-fri, mon,wed,fri or weekends. Needs hours, given now or already set.
@@ -862,6 +875,12 @@ Who is in an automation and how far they got, or which automations are messaging
 - `--handle <string>` Instead: what is running for this person right now, across automations.
 - `--limit <number>` How many to show. 1 to 500, 100 by default.
 - `--offset <number>` How many to skip, for the next page.
+
+### mb automation-status
+
+One person and this project's automations: which they are in, how the last ones ended and why, whether they are free to start one, and for each automation whether it would start for them now or what stops it.
+
+- `--handle <string>` Required. Their phone number or email.
 
 ### mb automation-stats
 
@@ -962,4 +981,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.52 1e0d1ac0333df809 -->
+<!-- mb skill 0.2.53 ad3f0b0a318421e1 -->
