@@ -12,7 +12,7 @@ The file contains TWILIO_ACCOUNT_SID, TWILIO_API_KEY_SID, TWILIO_API_KEY_SECRET,
 and TWILIO_AUTH_TOKEN; chmod 600 it and keep it ignored by git. Never paste
 secrets into tool arguments, logs, screenshots or pull requests. Use actions
 `numbers`, `import`, `limits`, `enable`, `disable`, `voice-setup`, `voice-number`
-and `status`; `mb twilio --help` lists required fields. Connecting a number
+and `status`; `mb help` lists required fields. Connecting a number
 replaces its inbound callbacks. Select the intended organization and project.
 iMessage gets new conversations first; Twilio handles new overflow conversations.
 Replies, scheduled messages and follow-ups keep their original sender.
@@ -962,4 +962,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.51 80b5123a6aa4f0b5 -->
+<!-- mb skill 0.2.52 1e0d1ac0333df809 -->
