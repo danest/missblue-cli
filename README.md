@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.53**
+Current version: **0.2.54**
 
 ## Install
 
@@ -126,6 +126,7 @@ COMMANDS
                          --from             Number id to send from. Defaults to your only number.
                          --file             A file to send. Uploaded first, then sent.
                          --allow-duplicate  Send although the same text went there moments ago.
+                         --manual           Send now like a person typing in the inbox: not held by the line's daily total. Opt-outs, blocks and the new-people limit still apply. Use for one-off human-initiated sends, not bulk.
                          --wait             Wait until it is `sent`, `delivered` or `read`, then print it. Exits with an error if that has not happened in time.
                          --timeout          How long --wait waits: 90s, 5m. A minute by default, at most 10 minutes.
   threads              Conversations, most recent first.

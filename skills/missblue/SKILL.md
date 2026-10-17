@@ -204,6 +204,11 @@ version's results stay. `automation-update --text` replaces the steps and ends a
 - First contacts (people who have never messaged the number) are limited per number per
   day, 50 by default, and spaced out. A send may be accepted and held; that is expected.
   Do not try to get around the limit.
+- Every message counts toward its number's daily total, and a send past it is held until
+  the day has room. `mb send --manual` goes now, as a person typing in the inbox would: use
+  it only for one message the user asked to send now, never for a list, a loop or anything
+  you are sending on your own. It still counts toward the day, and opt-outs, blocks and the
+  new-people limit still apply.
 - The server honours STOP and other opt-outs. A refused send to somebody who opted out
   is final: do not retry it from another number. If they write back afterwards, you may
   answer them one to one with `mb send`; campaigns and automations still skip
@@ -289,6 +294,7 @@ Send an iMessage.
 - `--from <string>` Number id to send from. Defaults to your only number.
 - `--file <string>` A file to send. Uploaded first, then sent.
 - `--allow-duplicate` Send although the same text went there moments ago.
+- `--manual` Send now like a person typing in the inbox: not held by the line's daily total. Opt-outs, blocks and the new-people limit still apply. Use for one-off human-initiated sends, not bulk.
 - `--wait <string>` Wait until it is `sent`, `delivered` or `read`, then print it. Exits with an error if that has not happened in time.
 - `--timeout <string>` How long --wait waits: 90s, 5m. A minute by default, at most 10 minutes.
 
@@ -981,4 +987,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.53 ad3f0b0a318421e1 -->
+<!-- mb skill 0.2.54 031d908fed487249 -->
