@@ -987,4 +987,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.54 031d908fed487249 -->
+<!-- mb skill 0.2.55 031d908fed487249 -->
