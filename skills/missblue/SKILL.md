@@ -599,9 +599,9 @@ Rename this project. Needs a key made by an owner or admin.
 
 ### mb setting
 
-Change one project setting: opt-out-detection on or off, auto-typing on or off, one-automation-at-a-time on or off (nobody is started on a list or tag automation while partway through another), or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
+Change one project setting: opt-out-detection on or off, auto-typing on or off, one-automation-at-a-time on or off (nobody is started on a list or tag automation while partway through another), links-need-reply on or off (a text with a link is refused to anybody who has never written to this project), or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
 
-- `--name <string>` Required. opt-out-detection, auto-typing, one-automation-at-a-time or sender-routing.
+- `--name <string>` Required. opt-out-detection, auto-typing, one-automation-at-a-time, links-need-reply or sender-routing.
 - `--value <string>` Required. on or off; single or round-robin for sender-routing.
 
 ### mb sending-stats
@@ -816,6 +816,8 @@ Create an automation, switched off. A keyword reply, or a message when somebody 
 - `--allow-repeat` Let the same person go through it more than once.
 - `--skip-recent-days <string>` A list or tag automation leaves out anybody who wrote to this project in the last this many days (1 to 365), since they are already talking to you. `off` turns it off. 7 on a new list or tag automation unless given, except with --file, which is saved as written.
 - `--exit-tags <string>` Tags that keep people out, separated by commas, like paid,booked. It does not start for anybody with one, and anybody in it leaves when one is added, with what it had waiting called off. `none` clears them.
+- `--on-finish-tag <string>` Tag people when their run of this automation ends, like bf_eligible, so an automation started by that tag picks them up. Only runs that end from now on are tagged. `none` turns it off.
+- `--on-finish-if <string>` Whose ends get --on-finish-tag: never_replied (nothing came in from them during the run, or in the day after it ended, so they are tagged a day after they finish; the default), replied, or any.
 - `--hours <string>` Only send between these times, like 08:00-18:00 or 9am-5pm. A message due outside them waits until they open; what starts it still starts it at any time.
 - `--time-zone <string>` The zone --hours are in, like America/Chicago. Eastern (America/New_York) unless given.
 - `--days <string>` The days it sends on, with --hours: mon-fri, mon,wed,fri or weekends. Every day unless given.
@@ -823,7 +825,7 @@ Create an automation, switched off. A keyword reply, or a message when somebody 
 
 ### mb automation-update
 
-Change an automation. Pass only what changes: --name, --from, --stop-on-reply, --allow-repeat, --skip-recent-days, --exit-tags or the hours flags alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their step number.
+Change an automation. Pass only what changes: --name, --from, --stop-on-reply, --allow-repeat, --skip-recent-days, --exit-tags, --on-finish-tag, --on-finish-if or the hours flags alone keep its trigger and steps; a trigger flag replaces the trigger; --text and the follow-up flags replace the steps; --file replaces the whole thing. People partway through keep their step number.
 
 - `--id <string>` Required. The automation id.
 - `--file <string>` A JSON file with the whole automation, as the API takes it.
@@ -847,6 +849,8 @@ Change an automation. Pass only what changes: --name, --from, --stop-on-reply, -
 - `--allow-repeat` Let the same person go through it more than once.
 - `--skip-recent-days <string>` A list or tag automation leaves out anybody who wrote to this project in the last this many days (1 to 365), since they are already talking to you. `off` turns it off. 7 on a new list or tag automation unless given, except with --file, which is saved as written.
 - `--exit-tags <string>` Tags that keep people out, separated by commas, like paid,booked. It does not start for anybody with one, and anybody in it leaves when one is added, with what it had waiting called off. `none` clears them.
+- `--on-finish-tag <string>` Tag people when their run of this automation ends, like bf_eligible, so an automation started by that tag picks them up. Only runs that end from now on are tagged. `none` turns it off.
+- `--on-finish-if <string>` Whose ends get --on-finish-tag: never_replied (nothing came in from them during the run, or in the day after it ended, so they are tagged a day after they finish; the default), replied, or any.
 - `--hours <string>` Only send between these times, like 08:00-18:00 or 9am-5pm. Keeps its zone and days unless you change them.
 - `--time-zone <string>` The zone its hours are in, like America/Chicago. Eastern (America/New_York) for new hours unless given.
 - `--days <string>` The days it sends on: mon-fri, mon,wed,fri or weekends. Needs hours, given now or already set.
@@ -878,6 +882,7 @@ Who is in an automation and how far they got, or which automations are messaging
 
 - `--id <string>` The automation id. Required unless --handle.
 - `--status <string>` Only `running`, `done`, `stopped` or `failed`.
+- `--outcome <string>` Only runs that ended this way: `completed`, `replied`, `stopped`, `number_left`, `gave_up` or `failed`.
 - `--handle <string>` Instead: what is running for this person right now, across automations.
 - `--limit <number>` How many to show. 1 to 500, 100 by default.
 - `--offset <number>` How many to skip, for the next page.
@@ -987,4 +992,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.55 031d908fed487249 -->
+<!-- mb skill 0.2.56 298f48f0c0ffa3e8 -->
