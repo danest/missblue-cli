@@ -138,6 +138,16 @@ fields a project's contacts have are listed with the variables at
 `GET /v1/projects/{id}/templates/variables`. `mb send` text goes exactly as typed: it is
 not filled in.
 
+Links can say which text sent a visitor. `mb link-tagging --on --domains coreagerx.com`
+tags every `https://` link to the project's own domains (and their subdomains) as each
+message is sent, whatever sends it: `utm_source=sms`, `utm_medium=text`, `utm_campaign`
+(the announcement's title or the automation's name, `direct` for a one-off), `utm_content`
+(`step-2-b` for a flow's step and version, `version-b` for an announcement's) and `utm_id`.
+A parameter the link already has is kept, another domain's link is never touched, and
+nothing personal goes in the address. `mb announce` and `mb automation` show the links as
+they will be sent (`links_as_sent`); `mb send --no-tag-links` and `mb schedule
+--no-tag-links` send one message's links as written.
+
 Keep an automation to business hours with `--hours 08:00-18:00 --days mon-fri`: Eastern
 time unless you pass `--time-zone America/Chicago` (or the recipient's zone), every day
 unless you pass `--days`. What starts it still starts it at any time; a message due outside
@@ -295,6 +305,7 @@ Send an iMessage.
 - `--file <string>` A file to send. Uploaded first, then sent.
 - `--allow-duplicate` Send although the same text went there moments ago.
 - `--manual` Send now like a person typing in the inbox: not held by the line's daily total. Opt-outs, blocks and the new-people limit still apply. Use for one-off human-initiated sends, not bulk.
+- `--no-tag-links` Send this one's links as written, when the project tags links (`mb link-tagging`).
 - `--wait <string>` Wait until it is `sent`, `delivered` or `read`, then print it. Exits with an error if that has not happened in time.
 - `--timeout <string>` How long --wait waits: 90s, 5m. A minute by default, at most 10 minutes.
 
@@ -604,6 +615,18 @@ Change one project setting: opt-out-detection on or off, auto-typing on or off, 
 - `--name <string>` Required. opt-out-detection, auto-typing, one-automation-at-a-time, links-need-reply or sender-routing.
 - `--value <string>` Required. on or off; single or round-robin for sender-routing.
 
+### mb link-tagging
+
+How this project's links are tagged with where they came from (UTM), so its site can tell which text, announcement or flow step sent a visitor. With no flags it shows the setting. Only links to the project's own --domains are tagged; a parameter a link already has is kept; nothing personal goes in the address. Changing it needs a key made by an owner or admin.
+
+- `--on` Tag links. The first time, give --domains as well.
+- `--off` Stop tagging links. The rest of the setting is kept.
+- `--domains <string>` Your own domains, comma-separated, replacing the list: coreagerx.com,superhealthyrx.com. Each covers its subdomains.
+- `--source <string>` utm_source. sms unless you say otherwise.
+- `--medium <string>` utm_medium. text unless you say otherwise.
+- `--click-id <string>` on or off: add mb_mid=<message id> to each link, to join a visit to the exact message. Off by default.
+- `--params <string>` More parameters, name=value comma-separated, replacing the ones set before: ref=missblue. `none` clears them.
+
 ### mb sending-stats
 
 Each of this project's numbers: sent and received today, how many new people it has messaged of its daily limit, how many first messages are waiting, and when it can message the next new person (next_new_contact_at).
@@ -774,6 +797,7 @@ Schedule one message for later. Pick a time that suits the recipient where they 
 - `--at <string>` Required. When, with the recipient's UTC offset: 2026-10-02T09:00:00-05:00.
 - `--time-zone <string>` The zone the time was chosen in, like America/Chicago. Shown in the console.
 - `--from <string>` Number id to send from. Defaults to your only number.
+- `--no-tag-links` Send its links as written, when the project tags links (`mb link-tagging`).
 
 ### mb schedule-cancel
 
@@ -992,4 +1016,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.56 298f48f0c0ffa3e8 -->
+<!-- mb skill 0.2.57 d81570e59baa0d29 -->

@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.56**
+Current version: **0.2.57**
 
 ## Install
 
@@ -127,6 +127,7 @@ COMMANDS
                          --file             A file to send. Uploaded first, then sent.
                          --allow-duplicate  Send although the same text went there moments ago.
                          --manual           Send now like a person typing in the inbox: not held by the line's daily total. Opt-outs, blocks and the new-people limit still apply. Use for one-off human-initiated sends, not bulk.
+                         --no-tag-links     Send this one's links as written, when the project tags links (`mb link-tagging`).
                          --wait             Wait until it is `sent`, `delivered` or `read`, then print it. Exits with an error if that has not happened in time.
                          --timeout          How long --wait waits: 90s, 5m. A minute by default, at most 10 minutes.
   threads              Conversations, most recent first.
@@ -251,6 +252,14 @@ COMMANDS
   setting              Change one project setting: opt-out-detection on or off, auto-typing on or off, one-automation-at-a-time on or off (nobody is started on a list or tag automation while partway through another), links-need-reply on or off (a text with a link is refused to anybody who has never written to this project), or sender-routing single or round-robin. Turning opt-out detection off, and sender routing, need a key made by an owner or admin.
                          --name             opt-out-detection, auto-typing, one-automation-at-a-time, links-need-reply or sender-routing. (required)
                          --value            on or off; single or round-robin for sender-routing. (required)
+  link-tagging         How this project's links are tagged with where they came from (UTM), so its site can tell which text, announcement or flow step sent a visitor. With no flags it shows the setting. Only links to the project's own --domains are tagged; a parameter a link already has is kept; nothing personal goes in the address. Changing it needs a key made by an owner or admin.
+                         --on               Tag links. The first time, give --domains as well.
+                         --off              Stop tagging links. The rest of the setting is kept.
+                         --domains          Your own domains, comma-separated, replacing the list: coreagerx.com,superhealthyrx.com. Each covers its subdomains.
+                         --source           utm_source. sms unless you say otherwise.
+                         --medium           utm_medium. text unless you say otherwise.
+                         --click-id         on or off: add mb_mid=<message id> to each link, to join a visit to the exact message. Off by default.
+                         --params           More parameters, name=value comma-separated, replacing the ones set before: ref=missblue. `none` clears them.
   sending-stats        Each of this project's numbers: sent and received today, how many new people it has messaged of its daily limit, how many first messages are waiting, and when it can message the next new person (next_new_contact_at).
   traffic              Messages in and out over time, per day.
                          --days             How far back to count. 1 to 90, 30 by default.
@@ -323,6 +332,7 @@ COMMANDS
                          --at               When, with the recipient's UTC offset: 2026-10-02T09:00:00-05:00. (required)
                          --time-zone        The zone the time was chosen in, like America/Chicago. Shown in the console.
                          --from             Number id to send from. Defaults to your only number.
+                         --no-tag-links     Send its links as written, when the project tags links (`mb link-tagging`).
   schedule-cancel      Cancel a scheduled message that has not gone yet.
                          --id               The scheduled message id, from `scheduled`. (required)
   automations          Automations in this project: what starts each, its steps, and whether it is on.
