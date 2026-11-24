@@ -1,6 +1,6 @@
 ---
 name: missblue
-description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered or read, look up whether a number has iMessage, add contacts to Apple Contacts and tag them, manage webhooks, and run campaigns (announcements to a list, scheduled messages, automations and how they are doing, A/B/C tests of their texts, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, A/B test messages to, or read replies from customers or contacts through Miss Blue, or mentions mb or missblue.
+description: Send and read iMessages from the user's Miss Blue business numbers with the mb command line. Text a customer, reply in a conversation, check whether a message was delivered or read, look up whether a number has iMessage, add contacts to Apple Contacts and tag them, manage webhooks, verify a customer's phone number by a code they text in, make a Text us button for a website, and run campaigns (announcements to a list, scheduled messages, automations and how they are doing, A/B/C tests of their texts, lists and tags). Use when the user asks to text, message, iMessage, follow up with, blast, announce to, schedule a message for, automate messages to, A/B test messages to, or read replies from customers or contacts through Miss Blue, to verify a phone number or add a text us button to a site, or mentions mb or missblue.
 ---
 
 # Miss Blue
@@ -141,8 +141,9 @@ not filled in.
 Links can say which text sent a visitor. `mb link-tagging --on --domains coreagerx.com`
 tags every `https://` link to the project's own domains (and their subdomains) as each
 message is sent, whatever sends it: `utm_source=sms`, `utm_medium=text`, `utm_campaign`
-(the announcement's title or the automation's name, `direct` for a one-off), `utm_content`
-(`step-2-b` for a flow's step and version, `version-b` for an announcement's) and `utm_id`.
+(the announcement's title or the automation's name; over 30 characters it is cut and
+ends in four characters of its id; none for a one-off) and `utm_content` (`step-2-b` for a flow's step and version, `version-b` for an
+announcement's).
 A parameter the link already has is kept, another domain's link is never touched, and
 nothing personal goes in the address. `mb announce` and `mb automation` show the links as
 they will be sent (`links_as_sent`); `mb send --no-tag-links` and `mb schedule
@@ -205,6 +206,23 @@ people given another version earlier. `variant-weights` works on the first step 
 versions only (later steps follow its split): people already given one keep it. Every
 version's results stay. `automation-update --text` replaces the steps and ends a test.
 
+## Phone verification and the website button
+
+Confirm a customer holds their phone: they text a six-digit code to your number, so no first
+message is spent on a stranger. `mb verify` returns the code, `sms_link` (Messages with the
+code typed) and `url` (a page with the code, a QR code and an Open Messages button):
+
+    mb verify --reference user_123 --phone +15555550100
+    mb verification --id <id>        # pending, verified (verified_phone), expired, cancelled
+    mb verifications                 # the latest, and which numbers can take codes
+    mb verify-cancel --id <id>
+
+Only a text that is the code and nothing else counts, and only on dedicated iMessage
+numbers. Pass `--phone` when you have one: then only that phone completes it.
+
+A Text us button for a website, so visitors text first: `mb text-us-button --name "Hippo"`
+prints the script tag to paste before `</body>`. Nothing is sent.
+
 ## Rules
 
 - Only message people who expect to hear from this business: its customers, and people
@@ -215,7 +233,8 @@ version's results stay. `automation-update --text` replaces the steps and ends a
   day, 50 by default, and spaced out. A send may be accepted and held; that is expected.
   Do not try to get around the limit.
 - Every message counts toward its number's daily total, and a send past it is held until
-  the day has room. `mb send --manual` goes now, as a person typing in the inbox would: use
+  the day has room, unless it answers somebody who has written to the number: that goes
+  now by itself. `mb send --manual` goes now, as a person typing in the inbox would: use
   it only for one message the user asked to send now, never for a list, a loop or anything
   you are sending on your own. It still counts toward the day, and opt-outs, blocks and the
   new-people limit still apply.
@@ -805,6 +824,45 @@ Cancel a scheduled message that has not gone yet.
 
 - `--id <string>` Required. The scheduled message id, from `scheduled`.
 
+### mb verify
+
+Hand out a phone verification code. The person texts the six digits to your number (the link types them), which proves they hold that phone. Returns the code, the sms: link, and a hosted page (`url`) to send them to.
+
+- `--phone <string>` Accept the code only from this phone, like +15551234567.
+- `--reference <string>` Your own id for it (a user, a signup), handed back untouched.
+- `--business-name <string>` What the page and the reply call you. Defaults to your organization's name.
+- `--return-url <string>` An https address the hosted page sends them to once verified.
+- `--expires-in <number>` Seconds the code lasts, 60 to 3600. Default 600.
+- `--reply-text <string>` What your number answers once they are verified, instead of the default.
+- `--no-reply` Send no answer once they are verified.
+- `--from <string>` Number id the code is texted to. Defaults to the project's only number that can take codes.
+
+### mb verification
+
+One phone verification: pending, verified, expired or cancelled, and the phone it came from.
+
+- `--id <string>` Required. The verification id, from `verify`.
+
+### mb verifications
+
+This project's latest phone verifications, and its numbers that can take codes.
+
+### mb verify-cancel
+
+Withdraw a phone verification code that has not been used.
+
+- `--id <string>` Required. The verification id, from `verify`.
+
+### mb text-us-button
+
+The script tag for a Text us chat button on a website, so visitors text your number first: Messages on a phone, a QR code on a computer. Prints the snippet to paste before </body>; nothing is sent.
+
+- `--name <string>` Who they are texting, shown in the panel: your business's name.
+- `--message <string>` The first line typed for them. Default: Hi! I have a question.
+- `--label <string>` The button's words. Default: Text us.
+- `--color <string>` The button's colour, #rrggbb.
+- `--from <string>` Number id to text. Defaults to your only number.
+
 ### mb automations
 
 Automations in this project: what starts each, its steps, and whether it is on.
@@ -1016,4 +1074,4 @@ Take a tag off somebody.
 
 Serve every command above as MCP tools over stdio. `--project <id>` pins the project for that agent.
 
-<!-- mb skill 0.2.57 d81570e59baa0d29 -->
+<!-- mb skill 0.2.58 911d69b7dd4254a0 -->

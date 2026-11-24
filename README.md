@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.57**
+Current version: **0.2.58**
 
 ## Install
 
@@ -335,6 +335,26 @@ COMMANDS
                          --no-tag-links     Send its links as written, when the project tags links (`mb link-tagging`).
   schedule-cancel      Cancel a scheduled message that has not gone yet.
                          --id               The scheduled message id, from `scheduled`. (required)
+  verify               Hand out a phone verification code. The person texts the six digits to your number (the link types them), which proves they hold that phone. Returns the code, the sms: link, and a hosted page (`url`) to send them to.
+                         --phone            Accept the code only from this phone, like +15551234567.
+                         --reference        Your own id for it (a user, a signup), handed back untouched.
+                         --business-name    What the page and the reply call you. Defaults to your organization's name.
+                         --return-url       An https address the hosted page sends them to once verified.
+                         --expires-in       Seconds the code lasts, 60 to 3600. Default 600.
+                         --reply-text       What your number answers once they are verified, instead of the default.
+                         --no-reply         Send no answer once they are verified.
+                         --from             Number id the code is texted to. Defaults to the project's only number that can take codes.
+  verification         One phone verification: pending, verified, expired or cancelled, and the phone it came from.
+                         --id               The verification id, from `verify`. (required)
+  verifications        This project's latest phone verifications, and its numbers that can take codes.
+  verify-cancel        Withdraw a phone verification code that has not been used.
+                         --id               The verification id, from `verify`. (required)
+  text-us-button       The script tag for a Text us chat button on a website, so visitors text your number first: Messages on a phone, a QR code on a computer. Prints the snippet to paste before </body>; nothing is sent.
+                         --name             Who they are texting, shown in the panel: your business's name.
+                         --message          The first line typed for them. Default: Hi! I have a question.
+                         --label            The button's words. Default: Text us.
+                         --color            The button's colour, #rrggbb.
+                         --from             Number id to text. Defaults to your only number.
   automations          Automations in this project: what starts each, its steps, and whether it is on.
   automation           One automation, and what switching it on would do: who it reaches now and how long first contacts take.
                          --id               The automation id, from `automations`. (required)
