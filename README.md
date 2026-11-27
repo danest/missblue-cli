@@ -7,7 +7,7 @@ OpenCode, Cursor, Claude Desktop, and anything else that speaks MCP).
 
 This repository holds the official builds. The source is not public.
 
-Current version: **0.2.58**
+Current version: **0.2.59**
 
 ## Install
 
